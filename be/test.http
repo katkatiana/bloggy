@@ -1,0 +1,31 @@
+GET http://localhost:3030
+
+####
+POST http://localhost:3030/createUser
+Content-Type: application/json
+
+
+{
+    "firstName" : "Chupa",
+    "lastName" : "Chups",
+    "email" : "chupa.chupa@gmail.com",
+    "avatar" : "pannaefragola",
+    "dateOfBirth" : "01-01-1970"
+}
+
+####
+GET http://localhost:3030/getUsers/65f3138ee63a0f43e14ae708
+
+####
+PATCH http://localhost:3030/updateUser/65f32ad5673cf22328b1cb6e
+Content-Type: application/json
+
+{
+    "firstName" : "Chupa"
+}
+
+####
+DELETE http://localhost:3030/deleteUser/65f31cf1031ff0bd8ddde30f
+
+####
+GET http://localhost:3030/getUsers/ByName/Chu
