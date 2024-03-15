@@ -8,8 +8,7 @@ router.get('/getUsers', async (req, res) => {
         res
             .status(200)
             .send(users)
-    }
-    catch (e){
+    } catch (e){
         res
             .status(500)
             .send(
@@ -62,6 +61,7 @@ router.get("/getUsers/ByName/:query", async (req, res) => {
             firstName: {
                 //operatori di mongoose (anche es. gte(greater than), lte(lower than)....)
                 $regex: '.*' + query + '.*',
+                //to make search case insensitive with the regular expressions (https://www.mongodb.com/docs/manual/reference/operator/query/regex/)
                 $options: 'i'
             }
         })
@@ -76,8 +76,7 @@ router.get("/getUsers/ByName/:query", async (req, res) => {
         res
             .status(200)
             .send(user)
-    }
-    catch(e) {
+    } catch(e) {
         res
         .status(500)
         .send(
@@ -111,8 +110,7 @@ router.post('/createUser', async (req, res) => {
                     payload: userToSave
                 }
             )
-    }
-    catch(e) {
+    } catch(e) {
         res
             .status(500)
             .send (
@@ -148,8 +146,7 @@ router.patch("/updateUser/:id", async (req, res) => {
         res
             .status(200)
             .send(result)
-    }
-    catch(e) {
+    } catch(e) {
         res
             .status(500)
             .send(
@@ -177,8 +174,7 @@ router.delete('/deleteUser/:id', async (req, res) => {
         res
             .status(200)
             .send(`User with ${id} successfully removed`)
-    }
-    catch(e) {
+    } catch(e) {
         res
         .status(500)
         .send(

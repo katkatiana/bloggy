@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 require('dotenv').config();
 
 const PORT = 3030;
@@ -8,10 +9,14 @@ const app = express();
 
 //import routes
 const usersRoute = require('./routes/users');
+const blogPostRoute = require('./routes/blogpost');
+console.log(blogPostRoute)
 
 //middleware
 app.use(express.json());
 app.use('/', usersRoute);
+app.use('/', blogPostRoute);
+app.use(cors());
 
 
 

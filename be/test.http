@@ -29,3 +29,43 @@ DELETE http://localhost:3030/deleteUser/65f31cf1031ff0bd8ddde30f
 
 ####
 GET http://localhost:3030/getUsers/ByName/Chu
+
+####
+GET http://localhost:3030/blogPosts
+
+####
+POST http://localhost:3030/addBlogPost
+Content-Type: application/json
+
+{
+    "title": "Fourth post",
+    "cover": "https://picsum.photos/200/300",
+    "readTime": {
+        "value": 4,
+        "unit": "min"
+    },
+    "author": {
+        "name": "Third author"
+    },
+    "content": "https://it.lipsum.com/"
+}
+
+####
+GET http://localhost:3030/blogPosts/65f49c8e22c220ff22440c4c
+
+####
+PATCH http://localhost:3030/updateBlogPost/65f49c8e22c220ff22440c4c
+Content-Type: application/json
+
+{
+    "title" : "Post First"
+}
+
+####
+DELETE http://localhost:3030/deleteBlogPost/65f4b53cc72b7dd224e671a5
+
+####
+GET http://localhost:3030/blogPosts/ByName/second
+
+####
+GET http://localhost:3030/blogPosts?title=first&content=https
