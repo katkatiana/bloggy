@@ -11,16 +11,16 @@ const internalStorage = multer.diskStorage(
             cb(null, 'uploads')
         },
         filename: (req, file, cb) => {
-            const uniqueSuffix = Date.now() + '-'+ Math.round(Math.random() * P19);
+            const uniqueSuffix = Date.now() + '-'+ Math.round(Math.random() * 19);
             const fileExtension = file.originalname.split('.').pop()
-            cb(null, `${file.fieldname} + ${uniqueSuffix}.${fileExtension}`)
+            cb(null, `${file.fieldname}` + `${uniqueSuffix}.${fileExtension}`)
         }
     }
 )
 
 const upload = multer( { storage: internalStorage } );
 
-server.post('/blogPosts/uploadiImg', upload.single('uploadImg'), async (req, res) => {
+server.post('/blogPosts/uploadImg', upload.single('uploadImg'), async (req, res) => {
     const url = req.protocol + '://' + req.get('host')
 
     try{
