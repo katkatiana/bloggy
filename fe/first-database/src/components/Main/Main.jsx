@@ -13,13 +13,19 @@ const Main = () => {
 
     const [isFetchCompleted, setIsFetchCompleted] = useState(false);
     const [error, setError] = useState(false);
-    const [blogPosts, setBlogPosts] = useState([])
-
+    const [blogPosts, setBlogPosts] = useState([]);
+    const session = JSON.parse(localStorage.getItem('auth'));
 
 
     const getBlogPosts = async () => {
         try{
-            const response = await fetch("http://localhost:3030/blogPosts")
+            const response = await fetch("http://localhost:3030/blogPosts", {
+                method: 'GET',
+                headers: {
+                    "Content-type": "application/json",
+                    "authorization": session
+                }
+            })
             if(response.ok) {
                 const data = await response.json();
                 setIsFetchCompleted(true)

@@ -4,8 +4,10 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 const UserModel = require('../models/users');
 const validateUserBody = require('../middlewares/validateUserBody');
+const verifyToken = require('../middlewares/verifyToken');
 
-router.get('/getUsers', async (req, res) => {
+
+router.get('/getUsers', verifyToken, async (req, res) => {
     try {
         const users = await UserModel.find();
         res

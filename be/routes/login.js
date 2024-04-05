@@ -48,7 +48,7 @@ server.post('/login', async (req, res) => {
                     }
                 )
                 res
-                    // .header('Authorization', token)
+                    .header('Authorization', token)
                     .status(200) 
                     .send(
                         {

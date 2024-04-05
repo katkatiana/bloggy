@@ -1,4 +1,5 @@
 GET http://localhost:3030/getUsers
+Authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaXJzdE5hbWUiOiJDaHVwYSIsImxhc3ROYW1lIjoiQ2h1cHMiLCJlbWFpbCI6ImNodXBhLmNodXBhQGdtYWlsLmNvbSIsImF2YXRhciI6InBhbm5hZWZyYWdvbGEiLCJpYXQiOjE3MTIzMjYwMDIsImV4cCI6MTcxMjQxMjQwMn0.kCWXJs_CmaPy3leiZWIKBJoFpehTgz5gXRjv0y0OMVk'
 
 ####
 POST http://localhost:3030/createUser

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'
 
 const LoginPage = () => {
     
     const [isError, setIsError] = useState(false);
+    const navigate = useNavigate();
     const [loginForm, setLoginForm] = useState( 
             {
                 email: '', 
@@ -15,12 +17,10 @@ const LoginPage = () => {
     const handleOnChange = (ev) => {
         ev.preventDefault();
         const {name, value} = ev.target;
-        console.log("ev.target:", ev.target)
         setLoginForm({
             ...loginForm,
             [name] : value 
         })
-        console.log("loginForm:", loginForm)
     }
     
     const handleOnSubmit = async (ev) => {
@@ -36,8 +36,7 @@ const LoginPage = () => {
             if(res.status === 200) {
                 alert('Login successfull')
                 localStorage.setItem('auth', JSON.stringify(res.data.token))
-                /* window.location.href = '/home' */
-                //localStorage.setItem("auth", JSON.stringify(res.data))
+                navigate('/home')
             }
         })
         .catch((err) => {

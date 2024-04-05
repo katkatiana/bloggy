@@ -2,6 +2,7 @@ const express = require('express');
 const server = express.Router();
 const BlogPostModel = require('../models/blogpost');
 const multer = require('multer');
+const verifyToken = require('../middlewares/verifyToken')
 
 
 const internalStorage = multer.diskStorage(
@@ -45,7 +46,7 @@ server.post('/blogPosts/uploadiImg', upload.single('uploadImg'), async (req, res
     }
 })
 
-server.get('/blogPosts', async (req, res) => {
+server.get('/blogPosts', verifyToken, async (req, res) => {
     const query = req.query;
     console.log(query)
     try{

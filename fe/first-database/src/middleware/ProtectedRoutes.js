@@ -1,6 +1,6 @@
 import { jwtDecode } from "jwt-decode";
-import {Outlet, useLocation, useNavigate} from "react-router-dom";
-import {useEffect} from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import LoginPage from "../pages/LoginPage";
 
 
@@ -16,9 +16,9 @@ export const useSession = () => {
 
     useEffect(() => {
         if (location.pathname !== '/home') {
-            navigate('/home')
+            navigate('/')
         } else {
-            navigate('/', {replace: true})
+            navigate('/home', {replace: true})
         }
     }, [navigate, session]);
 

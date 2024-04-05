@@ -13,8 +13,6 @@ function App() {
           <Route element = { <ProtectedRoutes />} >
                 <Route path = '/home' element = { <HomePage />} />
           </Route> 
-          {/* <Route exact path = '/' element = {<HomePage/ >} />
-          <Route exact path = '/login' element = {<LoginPage/ >} /> */}
           <Route path = '*' element = {<NotFound />} /> 
         </Routes>
 
