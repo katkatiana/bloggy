@@ -1,6 +1,9 @@
 const express = require('express');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const router = express.Router();
 const UserModel = require('../models/users');
+const validateUserBody = require('../middlewares/validateUserBody');
 
 router.get('/getUsers', async (req, res) => {
     try {
@@ -89,12 +92,16 @@ router.get("/getUsers/ByName/:query", async (req, res) => {
 })
 
 
-router.post('/createUser', async (req, res) => {
+router.post('/createUser', validateUserBody, async (req, res) => {
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
+
     const newUser = new UserModel(
         {
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             email: req.body.email,
+            pswHash: hashedPassword,
             avatar : req.body.avatar,
             dateOfBirth: req.body.dateOfBirth
         }

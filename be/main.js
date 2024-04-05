@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
+const logger = require('./middlewares/logger');
 require('dotenv').config();
 
 const PORT = 3030;
@@ -10,13 +12,20 @@ const app = express();
 //import routes
 const usersRoute = require('./routes/users');
 const blogPostRoute = require('./routes/blogpost');
-console.log(blogPostRoute)
+const loginRoute = require('./routes/login');
 
 //middleware
 app.use(express.json());
+//we need to define cors before all routes in order to have them working
+app.use(cors());
+
+app.use(logger);
+app.use('/uploads', express.static(path.join(__dirname, './uploads')))
 app.use('/', usersRoute);
 app.use('/', blogPostRoute);
-app.use(cors());
+app.use('/', loginRoute);
+
+
 
 
 

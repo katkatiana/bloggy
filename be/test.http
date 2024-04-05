@@ -1,27 +1,27 @@
-GET http://localhost:3030
+GET http://localhost:3030/getUsers
 
 ####
 POST http://localhost:3030/createUser
 Content-Type: application/json
 
-
 {
-    "firstName" : "Chupa",
-    "lastName" : "Chups",
-    "email" : "chupa.chupa@gmail.com",
-    "avatar" : "pannaefragola",
-    "dateOfBirth" : "01-01-1970"
+    "firstName" : "Amica",
+    "lastName" : "Chips",
+    "email" : "amica.chips@gmail.com",
+    "password" : "12345678",
+    "avatar" : "nellavitanehoprovatetante",
+    "dateOfBirth" : "10-01-1958"
 }
 
 ####
-GET http://localhost:3030/getUsers/65f3138ee63a0f43e14ae708
+GET http://localhost:3030/getUsers/660da02a0b4764b2d9cb347b
 
 ####
-PATCH http://localhost:3030/updateUser/65f32ad5673cf22328b1cb6e
+PATCH http://localhost:3030/updateUser/660da02a0b4764b2d9cb347b
 Content-Type: application/json
 
 {
-    "firstName" : "Chupa"
+    "lastName" : "Chups"
 }
 
 ####
@@ -41,11 +41,11 @@ Content-Type: application/json
     "title": "Fourth post",
     "cover": "https://picsum.photos/200/300",
     "readTime": {
-        "value": 4,
-        "unit": "min"
+        "value": "",
+        "unit": ""
     },
     "author": {
-        "name": "Third author"
+        "name": "Fourth author"
     },
     "content": "https://it.lipsum.com/"
 }
@@ -54,18 +54,30 @@ Content-Type: application/json
 GET http://localhost:3030/blogPosts/65f49c8e22c220ff22440c4c
 
 ####
-PATCH http://localhost:3030/updateBlogPost/65f49c8e22c220ff22440c4c
+PATCH http://localhost:3030/updateBlogPost/6602702b656eefb7a072dd23
 Content-Type: application/json
 
 {
-    "title" : "Post First"
+    "author" : {
+        "name": "First author"
+    }
 }
 
 ####
-DELETE http://localhost:3030/deleteBlogPost/65f4b53cc72b7dd224e671a5
+DELETE http://localhost:3030/deleteBlogPost/65f4b9942a026088f435233c
+
 
 ####
 GET http://localhost:3030/blogPosts/ByName/second
 
 ####
 GET http://localhost:3030/blogPosts?title=first&content=https
+
+###
+POST http://localhost:3030/login
+Content-Type: application/json
+
+{
+    "email" : "chupa.chupa@gmail.com",
+    "password" : "1234"
+}

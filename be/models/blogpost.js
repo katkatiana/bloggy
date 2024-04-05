@@ -16,11 +16,12 @@ const BlogPostSchema = new mongoose.Schema(
         },
         readTime: {
             value: {
-                type: Number
+                type: Number,
+                default: 3
             },
             unit: {
                 type: String,
-                required: true
+                default: 'min'
             }
         },
         author: {

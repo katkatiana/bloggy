@@ -1,6 +1,49 @@
 const express = require('express');
 const server = express.Router();
 const BlogPostModel = require('../models/blogpost');
+const multer = require('multer');
+
+
+const internalStorage = multer.diskStorage(
+    {
+        destination: (req, file, cb) => {
+            cb(null, 'uploads')
+        },
+        filename: (req, file, cb) => {
+            const uniqueSuffix = Date.now() + '-'+ Math.round(Math.random() * P19);
+            const fileExtension = file.originalname.split('.').pop()
+            cb(null, `${file.fieldname} + ${uniqueSuffix}.${fileExtension}`)
+        }
+    }
+)
+
+const upload = multer( { storage: internalStorage } );
+
+server.post('/blogPosts/uploadiImg', upload.single('uploadImg'), async (req, res) => {
+    const url = req.protocol + '://' + req.get('host')
+
+    try{
+        const imageUrl = req.file.filename
+
+        res
+            .status(200)
+            .json(
+                {
+                    source: `${url}/uploads/${imageUrl}`
+                }
+            )
+    } catch (e) {
+        console.log(e)
+        res
+            .status(500)
+            .send(
+                {
+                    statusCode: 500,
+                    message: 'File Upload Error'
+                }
+            )
+    }
+})
 
 server.get('/blogPosts', async (req, res) => {
     const query = req.query;
@@ -244,7 +287,7 @@ server.delete('/deleteBlogPost/:id', async (req, res) => {
     const { id } = req.params;
 
     try{
-        const blogPost = BlogPostModel.findByIdAndDelete(id)
+        const blogPost = await BlogPostModel.findByIdAndDelete(id)
 
         if(!blogPost) {
             res
