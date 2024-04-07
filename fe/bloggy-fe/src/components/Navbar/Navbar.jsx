@@ -52,7 +52,7 @@ function MyNav() {
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container className = "navbar">
-        <Navbar.Brand href="#home">React-Bootstrap</Navbar.Brand>
+        <Navbar.Brand href="#home">Bloggy</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Nav className="me-auto user-name-welcome">
             {

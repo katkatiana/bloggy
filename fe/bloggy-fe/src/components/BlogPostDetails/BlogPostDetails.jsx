@@ -55,7 +55,7 @@ const BlogPostDetails = () => {
 
     const getBlogPost = async () => {
       try{
-          const response = await fetch("http://localhost:3030/blogPosts/"+id, {
+          const response = await fetch(process.env.REACT_APP_FRONTEND_SERVER_URL+"/blogPosts/"+id, {
               method: 'GET',
               headers: {
                   "Content-type": "application/json",

@@ -52,7 +52,7 @@ const SignupForm = () => {
             await axios(
                 {
                     method: 'post',
-                    url: 'http://localhost:3030/createUser',
+                    url: process.env.REACT_APP_FRONTEND_SERVER_URL+'/createUser',
                     data: signupForm,
                     headers: {
                         "Content-Type": 'multipart/form-data'

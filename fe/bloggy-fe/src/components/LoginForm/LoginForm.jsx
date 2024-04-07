@@ -26,7 +26,7 @@ const LoginForm = () => {
     }
 
     const handleOnClickGithubLogin = () => {
-        window.location.href = 'http://localhost:3030/auth/github' 
+        window.location.href = process.env.REACT_APP_FRONTEND_SERVER_URL+'/auth/github' 
     }
 
     const goToSignUp = () => {
@@ -38,7 +38,7 @@ const LoginForm = () => {
 
         await axios
         .post(
-            'http://localhost:3030/login',
+            process.env.REACT_APP_FRONTEND_SERVER_URL+'/login',
             loginForm
         )
         .then((res) => {

@@ -75,55 +75,51 @@ function AddBlogPost({ postAdded }) {
   }
 
   const handleOnSubmit = async (ev) => {
-    ev.preventDefault()
+    ev.preventDefault()    
 
-    if(/*!checkInput()*/false) {
-        alert("Please, check that your passwords match.")
-    } else{
+    const authorName = getAuthorName() 
+    const authorEmail = getAuthorEmail() 
 
-        const authorName = getAuthorName() /* todo: check author name */
-        const authorEmail = getAuthorEmail() /* todo: check author email */
+    const readingTime = calculateReadingTime(formData.content)
 
-        const readingTime = calculateReadingTime(formData.content)
-
-        const body = {
-                        "title": formData.title,
-                        "cover": formData.cover,
-                        "readTime": {
-                            "value": readingTime,
-                            "unit": 'min'
-                        },
-                        "author": {
-                            "name": authorName,
-                            "email": authorEmail
-                        },
-                        "content": formData.content
-                    }
-
-        await axios(
-            {
-                method: 'post',
-                url: 'http://localhost:3030/addBlogPost',
-                data: body,
-                headers: {
-                    "Content-Type": 'multipart/form-data'
+    const body = {
+                    "title": formData.title,
+                    "cover": formData.cover,
+                    "readTime": {
+                        "value": readingTime,
+                        "unit": 'min'
+                    },
+                    "author": {
+                        "name": authorName,
+                        "email": authorEmail
+                    },
+                    "content": formData.content
                 }
+
+    await axios(
+        {
+            method: 'post',
+            url: process.env.REACT_APP_FRONTEND_SERVER_URL+'/addBlogPost',
+            data: body,
+            headers: {
+                "Content-Type": 'multipart/form-data'
             }
-    )
-        .then((res) => {
-            console.log(res);
-            if(res.status === 201) {
-                alert('Your blog post was added!')
-                postAdded(true)
-                handleClose()
-            }
-        })
-        .catch((err) => {
-            console.log("error", err)
-            postAdded(false)
-            alert("Please, try again.")
-        })
-    }       
+        }
+)
+    .then((res) => {
+        console.log(res);
+        if(res.status === 201) {
+            alert('Your blog post was added!')
+            postAdded(true)
+            handleClose()
+        }
+    })
+    .catch((err) => {
+        console.log("error", err)
+        postAdded(false)
+        alert("Please, try again.")
+    })
+      
 } 
 
 //   const addData = async () => {

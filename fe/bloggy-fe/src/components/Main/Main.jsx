@@ -21,7 +21,7 @@ const Main = () => {
 
     const getBlogPosts = async () => {
         try{
-            const response = await fetch("http://localhost:3030/blogPosts", {
+            const response = await fetch(process.env.REACT_APP_FRONTEND_SERVER_URL+"/blogPosts", {
                 method: 'GET',
                 headers: {
                     "Content-type": "application/json",

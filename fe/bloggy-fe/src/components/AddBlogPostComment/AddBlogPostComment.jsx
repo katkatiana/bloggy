@@ -76,7 +76,7 @@ function AddBlogPostComment({blogPostId, commentUpdated}) {
                 "commentAuthorName": getAuthorName(),
                 "commentAuthorAvatar" : getAuthorAvatar()
             }
-            const response = await fetch("http://localhost:3030/blogPosts/"+blogPostId+"/addComment", {
+            const response = await fetch(process.env.REACT_APP_FRONTEND_SERVER_URL+"/blogPosts/"+blogPostId+"/addComment", {
                 method: "POST",
                 body : JSON.stringify(body),
                 headers: {

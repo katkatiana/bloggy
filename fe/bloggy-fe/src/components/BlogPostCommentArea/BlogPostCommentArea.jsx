@@ -26,7 +26,7 @@ const BlogPostCommentArea = ({blogPostId, commentsArray, setUpdateCommentFlag}) 
      */
     const deleteComment = async (commentId) => {
           try {
-              const res = await fetch("http://localhost:3030/blogPosts/"+blogPostId+"/comment/" + commentId, {
+              const res = await fetch(process.env.REACT_APP_FRONTEND_SERVER_URL+"/blogPosts/"+blogPostId+"/comment/" + commentId, {
                 method: "DELETE",
                 headers: {
                   Authorization: session,
