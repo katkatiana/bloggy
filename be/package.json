@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon main.js"
+    "dev": "nodemon main.js",
+    "production" : "pm2-runtime start main.js -i --exp-backoff-restart-delay=100"
   },
   "keywords": [],
   "author": "",
