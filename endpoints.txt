@@ -1,0 +1,2 @@
+frontend: https://main--serene-meringue-2b4475.netlify.app/
+backend: https://bloggy-be.onrender.com
