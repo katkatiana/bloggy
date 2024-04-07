@@ -19,11 +19,6 @@ const Main = () => {
     const [blogPosts, setBlogPosts] = useState([]);
     const session = JSON.parse(localStorage.getItem('auth'));
 
-    window.onpopstate = () => {
-        alert("You will be logged out.")
-        localStorage.removeItem('auth');
-    }
-
     const getBlogPosts = async () => {
         try{
             const response = await fetch("http://localhost:3030/blogPosts", {
