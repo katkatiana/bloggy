@@ -5,6 +5,51 @@ const router = express.Router();
 const UserModel = require('../models/users');
 const validateUserBody = require('../middlewares/validateUserBody');
 const verifyToken = require('../middlewares/verifyToken');
+const multer = require('multer');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const nodemailer = require('nodemailer');
+const Mailgen = require('mailgen');
+
+let transporter = nodemailer.createTransport({
+    service: 'gmail', 
+    auth: {
+        user: process.env.EMAIL_SENDER,
+        pass: process.env.PASSWORD_SENDER
+    }
+});
+
+let mailGenerator = new Mailgen({
+    theme: 'default',
+    product: {
+        // Appears in header & footer of e-mails
+        name: 'Bloggy',
+        link: 'http://localhost:3000'
+        // Optional product logo
+        // logo: 'https://mailgen.js/img/logo.png'
+    }
+});
+
+cloudinary.config(
+    {
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET
+
+    }
+)
+
+const cloudStorage = new CloudinaryStorage( 
+    {
+        cloudinary: cloudinary,
+        params: {
+            folder: 'userImg',
+            allowed_formats: ['png', 'jpeg', 'jpg'],
+            public_id: (req, file) => file.name
+        }
+    }
+)
+const cloudUpload = multer({ storage: cloudStorage });
 
 
 router.get('/getUsers', verifyToken, async (req, res) => {
@@ -94,9 +139,36 @@ router.get("/getUsers/ByName/:query", async (req, res) => {
 })
 
 
-router.post('/createUser', validateUserBody, async (req, res) => {
+router.post('/createUser', cloudUpload.single('avatar'), validateUserBody, async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
+    const user = req.body.firstName + " " + req.body.lastName;
+    const email = {
+        body: {
+            name: user,
+            intro: 'Welcome to Bloggy! We\'re very excited to have you on board.',
+            // action: {
+            //     instructions: 'To get started with Mailgen, please click here:',
+            //     button: {
+            //         color: '#22BC66', // Optional action button color
+            //         text: 'Confirm your account',
+            //         link: 'https://mailgen.js/confirm?s=d9729feb74992cc3482b350163a1a010'
+            //     }
+            // },
+            outro: 'Need help, or have questions? Just send an email to info@bloggy.com, we\'d love to help.'
+        }
+    };
+
+    let mailOptions = {
+        from: process.env.EMAIL_SENDER,
+        to: req.body.email,
+        subject: 'Welcome to Bloggy',
+        html: mailGenerator.generate(email),
+        text: mailGenerator.generatePlaintext(email)
+    };
+
+    /* TODO: check existence of user */
+
 
     const newUser = new UserModel(
         {
@@ -104,10 +176,11 @@ router.post('/createUser', validateUserBody, async (req, res) => {
             lastName: req.body.lastName,
             email: req.body.email,
             pswHash: hashedPassword,
-            avatar : req.body.avatar,
+            avatar : req.file.path,
             dateOfBirth: req.body.dateOfBirth
         }
     )
+
 
     try {
         const userToSave = await newUser.save();
@@ -119,7 +192,15 @@ router.post('/createUser', validateUserBody, async (req, res) => {
                     payload: userToSave
                 }
             )
+        transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+                throw new Error(error);
+            } else {
+                console.log('Email sent: ' + info.response);
+            }
+        });
     } catch(e) {
+        console.log(e)
         res
             .status(500)
             .send (
@@ -192,6 +273,41 @@ router.delete('/deleteUser/:id', async (req, res) => {
                 message: 'Internal Server Error'
             }
         )
+    }
+})
+
+router.patch("/updateUser/:id/avatar", cloudUpload.single('avatar'), async (req, res) => {
+    const {id} = req.params;
+
+    try{
+        const user = await UserModel.findById(id);
+
+        if(!user) {
+            return res
+                    .status(404)
+                    .send({
+                        statusCode: 404,
+                        message: 'User not found'
+                    })
+        }
+
+        const updatedData = {avatar: req.file.path};
+        const options = { new : true }
+
+        const result = await UserModel.findByIdAndUpdate(id, updatedData, options);
+
+        res
+            .status(200)
+            .send(result)
+    } catch(e) {
+        res
+            .status(500)
+            .send(
+                {
+                    statusCode: 500,
+                    message: 'Internal Server Error'
+                }
+            )
     }
 })
 

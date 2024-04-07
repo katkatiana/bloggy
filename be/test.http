@@ -6,7 +6,7 @@ POST http://localhost:3030/createUser
 Content-Type: application/json
 
 {
-    "firstName" : "Amica",
+    "firstName" : "Gianni",
     "lastName" : "Chips",
     "email" : "amica.chips@gmail.com",
     "password" : "12345678",
@@ -40,7 +40,7 @@ Content-Type: application/json
 
 {
     "title": "Fourth post",
-    "cover": "https://picsum.photos/200/300",
+    "cover": "https://picsum.photos/300/300",
     "readTime": {
         "value": "",
         "unit": ""

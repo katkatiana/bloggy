@@ -7,15 +7,16 @@ import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import AddBlogPost from '../AddBlogPost/AddBlogPost';
+import './Main.css'
 
 
 const Main = () => {
 
     const [isFetchCompleted, setIsFetchCompleted] = useState(false);
     const [error, setError] = useState(false);
+    const [isPostAdded , setIsPostAdded] = useState(false);
     const [blogPosts, setBlogPosts] = useState([]);
     const session = JSON.parse(localStorage.getItem('auth'));
-
 
     const getBlogPosts = async () => {
         try{
@@ -44,14 +45,15 @@ const Main = () => {
 
     useEffect( () => {
         getBlogPosts()
-    }, [])
+        setIsPostAdded(false)
+    }, [isPostAdded])
 
 
     return (
         <>
             <Navbar />
             <Container>
-                <AddBlogPost />
+                <AddBlogPost postAdded = {setIsPostAdded} />
                 <Row>
                     {
                         error || !isFetchCompleted ? <Spinner animation="border" variant="warning" /> : ""
@@ -62,12 +64,14 @@ const Main = () => {
                                 return(
                                     <Col key = {blogPost._id} style={{display: 'flex'}}> 
                                         <Card style={{ width: '12rem' }}>
-                                            <Card.Img variant="top" src = {blogPost.cover} />
+                                            <Card.Img variant="top" src = {blogPost.cover} className = 'card-img' />
                                             <Card.Body>
-                                                <Card.Title>
+                                                <Card.Title className = 'title-blog-post truncate'>
                                                     {blogPost.title}
                                                 </Card.Title>
-                                                <Card.Text>
+                                                <Card.Text
+                                                    className='truncate'
+                                                >
                                                     {blogPost.content}
                                                 </Card.Text>
                                                 <Button variant="primary">Read more</Button>

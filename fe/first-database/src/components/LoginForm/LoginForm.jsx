@@ -24,6 +24,14 @@ const LoginForm = () => {
             [name] : value 
         })
     }
+
+    const handleOnClickGithubLogin = () => {
+        window.location.href = 'http://localhost:3030/auth/github' 
+    }
+
+    const goToSignUp = () => {
+        navigate('/signup')
+    }
     
     const handleOnSubmit = async (ev) => {
         ev.preventDefault()
@@ -86,10 +94,27 @@ const LoginForm = () => {
                 </Form.Group>
 
                 <Button 
-                variant = "primary" 
-                type = "submit" >
-                Login
+                    variant = "primary" 
+                    type = "submit" >
+                    Login
                 </Button>
+
+                <Button 
+                    variant = "dark" 
+                    type = "button" 
+                    onClick = {handleOnClickGithubLogin}
+                >
+                Login with GitHub
+                </Button>
+
+            <p>Not registered yet?</p>
+            <Button 
+                variant = "warning" 
+                type = "button" 
+                onClick = {goToSignUp}
+                >
+                Sign Up
+            </Button>
             </Form>
         </>
         )

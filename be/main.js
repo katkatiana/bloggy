@@ -4,6 +4,7 @@ const cors = require('cors');
 const path = require('path');
 const logger = require('./middlewares/logger');
 require('dotenv').config();
+const cloudinary = require('cloudinary').v2;
 
 const PORT = 3030;
 
@@ -13,6 +14,7 @@ const app = express();
 const usersRoute = require('./routes/users');
 const blogPostRoute = require('./routes/blogpost');
 const loginRoute = require('./routes/login');
+const githubRoute = require('./routes/github')
 
 //middleware
 app.use(express.json());
@@ -24,9 +26,7 @@ app.use('/uploads', express.static(path.join(__dirname, './uploads')))
 app.use('/', usersRoute);
 app.use('/', blogPostRoute);
 app.use('/', loginRoute);
-
-
-
+app.use('/', githubRoute);
 
 
 /* app.get("/", (req, res) => {
@@ -61,6 +61,15 @@ db.on('error', console.error.bind(console, 'Db connection error'));
 db.once('open', () => {
     console.log('Database succesfully connected')
 })
+
+cloudinary.config(
+    {
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET
+
+    }
+)
 
 
 

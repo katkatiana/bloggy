@@ -5,7 +5,7 @@ const validateUserBody = (req, res, next) => {
         firstName,
         lastName,
         email,
-        pswHash,
+        password,
         avatar, 
         dateOfBirth,
     } = req.body
@@ -18,11 +18,12 @@ const validateUserBody = (req, res, next) => {
         errors.push('Last name must be a string')
     }
     
-    if(!/^[^\s@]+@[s@].[^\s@]+$/.test(email)){
+    if(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/.test(email)){
         errors.push('Please insert a valid email')
     }
     
     if(typeof password !== 'string' || password.length < 8) {
+        console.log(password)
         errors.push('password must contain at least 8 characters')
     }
     
