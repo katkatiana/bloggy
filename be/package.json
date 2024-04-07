@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon main.js",
-    "production" : "pm2 start main.js -i --exp-backoff-restart-delay=100"
+    "production": "pm2 start main.js -i --exp-backoff-restart-delay=100"
   },
   "keywords": [],
   "author": "",
@@ -28,6 +28,7 @@
     "passport": "^0.7.0",
     "passport-github": "^1.1.0",
     "passport-github2": "^0.1.12",
+    "pm2": "^5.3.1",
     "sendmail": "^1.6.1"
   },
   "devDependencies": {
