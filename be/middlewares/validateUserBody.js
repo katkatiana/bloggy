@@ -23,7 +23,6 @@ const validateUserBody = (req, res, next) => {
     }
     
     if(typeof password !== 'string' || password.length < 8) {
-        console.log(password)
         errors.push('password must contain at least 8 characters')
     }
     

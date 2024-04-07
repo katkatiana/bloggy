@@ -6,6 +6,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
+import { Link } from 'react-router-dom';
 import AddBlogPost from '../AddBlogPost/AddBlogPost';
 import './Main.css'
 
@@ -17,6 +18,11 @@ const Main = () => {
     const [isPostAdded , setIsPostAdded] = useState(false);
     const [blogPosts, setBlogPosts] = useState([]);
     const session = JSON.parse(localStorage.getItem('auth'));
+
+    window.onpopstate = () => {
+        alert("You will be logged out.")
+        localStorage.removeItem('auth');
+    }
 
     const getBlogPosts = async () => {
         try{
@@ -74,7 +80,9 @@ const Main = () => {
                                                 >
                                                     {blogPost.content}
                                                 </Card.Text>
-                                                <Button variant="primary">Read more</Button>
+                                                <Link to = {`/blogPost/${blogPost._id}`}>
+                                                    <Button data-testid="btn-link" variant="primary">Read more</Button>
+                                                </Link>
                                             </Card.Body>
                                         </Card>
                                     </Col>

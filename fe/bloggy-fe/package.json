@@ -1,5 +1,5 @@
 {
-  "name": "first-database",
+  "name": "bloggy-fe",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -10,6 +10,7 @@
     "bootstrap": "^5.3.3",
     "browser-router": "^0.2.0",
     "jwt-decode": "^4.0.0",
+    "nanoid": "^5.0.7",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.2",
     "react-datepicker": "^6.6.0",

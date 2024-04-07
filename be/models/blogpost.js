@@ -37,7 +37,27 @@ const BlogPostSchema = new mongoose.Schema(
         content: {
             type: String,
             required: true
-        }
+        },
+        comments: [
+            {
+                commentId: {
+                    type: String,
+                    required: true
+                },
+                commentAuthorName: {
+                    type: String,
+                    required: true
+                },
+                commentAuthorAvatar: {
+                    type: String,
+                    required: true
+                },
+                content: {
+                    type: String,
+                    required: true
+                }
+            }
+        ]
     }
 )
 

@@ -5,6 +5,7 @@ import LoginPage from "./pages/LoginPage";
 import ProtectedRoutes from "./middleware/ProtectedRoutes"
 import SignupPage from "./pages/SignupPage";
 import LoginSuccess from "./pages/LoginSuccess";
+import SelectedBlogPost from "./pages/SelectedBlogPost";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route  path = '/success' element = {<LoginSuccess /> } />
           <Route element = { <ProtectedRoutes />} >
                 <Route path = '/home' element = { <HomePage />} />
+                <Route path = '/blogPost/:id' element = {<SelectedBlogPost />} />
           </Route> 
           <Route path = '*' element = {<NotFound />} /> 
         </Routes>

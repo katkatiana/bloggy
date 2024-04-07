@@ -7,8 +7,8 @@ const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const verifyToken = require('../middlewares/verifyToken');
 const nodemailer = require('nodemailer');
 const Mailgen = require('mailgen');
-
-
+const crypto = require('crypto');
+const { log } = require('console');
 
 let transporter = nodemailer.createTransport({
     service: 'gmail', 
@@ -112,7 +112,6 @@ server.post('/blogPosts/uploadImg', upload.single('uploadImg'), async (req, res)
 
 server.get('/blogPosts', verifyToken, async (req, res) => {
     const query = req.query;
-    console.log(query)
     try{
         let blogPosts 
         if(!query){
@@ -149,7 +148,6 @@ server.get('/blogPosts', verifyToken, async (req, res) => {
             })
 
             blogPosts = await BlogPostModel.find(searchParams)
-            console.log(blogPosts)
 
         }
         res
@@ -168,12 +166,11 @@ server.get('/blogPosts', verifyToken, async (req, res) => {
     }
 })
 
-server.get('/blogPosts/:id', async (req, res) => {
+server.get('/blogPosts/:id', verifyToken, async (req, res) => {
     const { id } = req.params;
 
     try{
         const blogPost = await BlogPostModel.findById(id);
-        console.log(blogPost)
 
         if(!blogPost) {
             res
@@ -240,7 +237,6 @@ server.get('/blogPosts/ByName/:query', async (req, res) => {
 
 /* server.get('/blogPosts?title=:query', async (req, res) => {
     const { query } = req.params;
-    console.log(req)
 
     try{
         const titleBlogPost = await BlogPostModel.find(
@@ -272,7 +268,6 @@ server.get('/blogPosts/ByName/:query', async (req, res) => {
 }) */
 
 server.post('/addBlogPost', cloudUpload.single('cover'), async (req, res) => {
-    
     
     const email = {
         body: {
@@ -446,5 +441,119 @@ server.patch('/updateBlogPost/:id/cover', cloudUpload.single('cover'), async (re
     }
 })
 
+server.get('/blogPosts/:id/comments', verifyToken, async (req, res) => {
+    const { id } = req.params;
+
+    try{
+        const blogPost = await BlogPostModel.findById(id);
+
+        if(!blogPost) {
+            res
+                .status(404)
+                .send(
+                    {
+                        statusCode: 404,
+                        message: 'This post was not found'
+                    }
+                )
+        }
+
+    } catch(e) {
+        console.log(e)
+        res
+            .status(500)
+            .send({
+                statusCode: 500,
+                message: 'Internal Server Error'
+            })
+    }
+})
+
+server.post('/blogPosts/:id/addComment', verifyToken, async (req, res) => {
+    const { id } = req.params;
+
+    try{
+        const blogPost = await BlogPostModel.findById(id);
+
+        if(!blogPost) {
+            res
+                .status(404)
+                .send(
+                    {
+                        statusCode: 404,
+                        message: 'This post was not found'
+                    }
+                )
+        } else {
+            let newComment = {
+                commentId: crypto.randomBytes(12).toString('hex'),
+                commentAuthorName: req.body.commentAuthorName,
+                commentAuthorAvatar: req.body.commentAuthorAvatar,
+                content: req.body.content
+            }     
+
+            
+            blogPost.comments.push(newComment);            
+            await blogPost.save();
+            
+            res
+            .status(200)
+            .send({
+                statusCode: 200,
+                message: 'Comment added successfully.'
+            })
+            
+        }
+
+    } catch(e) {
+        console.log(e)
+        res
+            .status(500)
+            .send({
+                statusCode: 500,
+                message: 'Internal Server Error'
+            })
+    }
+})
+
+server.delete('/blogPosts/:id/comment/:commentId', async (req, res) => {
+    const id  = req.params.id;
+    const commentId = req.params.commentId;
+
+    try{
+        const blogPost = await BlogPostModel.findById(id)
+        let index;
+
+        if(!blogPost) {
+            res
+                .status(404)
+                .send('The post was not found')
+        } else {
+            blogPost.comments.map(singleComment => {
+                if(singleComment.commentId === commentId){
+                    index = blogPost.comments.indexOf(singleComment);
+                    blogPost.comments.splice(index, 1);
+                }
+            })
+            await blogPost.save()
+            res
+            .status(200)
+            .send(
+                {
+                    statusCode: 200,
+                    message: `Post with id ${id} succesfully deleted`
+                }
+            )
+        }
+    } catch(e) {
+        console.log(e)
+        res
+            .status(500)
+            .send({
+                statusCode: 500,
+                message: 'Internal Server Error'
+            })
+    }
+})
 
 module.exports = server;

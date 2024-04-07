@@ -62,13 +62,17 @@ const SignupForm = () => {
             .then((res) => {
                 console.log(res);
                 if(res.status === 201) {
-                    alert('Sign up successfull')
+                    alert('Sign up successfull.')
                     navigate('/')
                 }
             })
             .catch((err) => {
                 console.log("error", err)
-                alert("Please, try again.")
+                if(err.response.status === 409) {
+                    alert('Email already existing.')
+                } else {
+                    alert("Please, try again.")
+                }            
             })
         }       
     } 

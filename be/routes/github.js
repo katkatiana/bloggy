@@ -9,7 +9,28 @@ const crypto = require('crypto');
 const { log } = require('console');
 const axios = require('axios');
 const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer');
+const Mailgen = require('mailgen');
 require('dotenv');
+
+let transporter = nodemailer.createTransport({
+    service: 'gmail', 
+    auth: {
+        user: process.env.EMAIL_SENDER,
+        pass: process.env.PASSWORD_SENDER
+    }
+});
+
+let mailGenerator = new Mailgen({
+    theme: 'default',
+    product: {
+        // Appears in header & footer of e-mails
+        name: 'Bloggy',
+        link: 'http://localhost:3000'
+        // Optional product logo
+        // logo: 'https://mailgen.js/img/logo.png'
+    }
+});
 
 let userEmail = ""
 
@@ -47,7 +68,6 @@ const getUserEmail = async (accessToken) => {
         }
     )
     .then((res) => {
-        console.log(res);
         if(res.status === 200) {
             userEmail = res.data[0].email
         }
@@ -75,6 +95,28 @@ passport.use(
                 const name = _json.name.split(" ")                
                 const tempPassword = crypto.randomBytes(10).toString('hex');
                 const saltRounds = 10;
+                const email = {
+                    body: {
+                        name: name[0] + " " + name[1],
+                        intro: [
+                            'Welcome to Bloggy! We\'re very excited to have you on board.', 
+                            'Since you\'ve signed in with an external login service, we\'ve generated a temporary password for you!',
+                            'You\'ll find it below.',
+                            tempPassword,
+                            'You can use it together with your email address in order to login without external services.',
+                            'If you want to change it, you can do so in your profile settings.'
+                        ],
+                        outro: 'Need help, or have questions? Just send an email to info@bloggy.com, we\'d love to help.'
+                    }
+                };
+            
+                let mailOptions = {
+                    from: process.env.EMAIL_SENDER,
+                    to: userEmail,
+                    subject: 'Welcome to Bloggy',
+                    html: mailGenerator.generate(email),
+                    text: mailGenerator.generatePlaintext(email)
+                };            
                 const newUser = new userModel(
                     {
                         firstName: name[0],
@@ -86,6 +128,13 @@ passport.use(
                     }
                 )
                 await newUser.save()
+                transporter.sendMail(mailOptions, function(error, info){
+                    if (error) {
+                        throw new Error(error);
+                    } else {
+                        console.log('Email sent: ' + info.response);
+                    }
+                });
             }
 
             return done(null, profile)

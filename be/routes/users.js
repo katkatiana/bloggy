@@ -143,18 +143,11 @@ router.post('/createUser', cloudUpload.single('avatar'), validateUserBody, async
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
     const user = req.body.firstName + " " + req.body.lastName;
+    const userEmail = req.body.email;
     const email = {
         body: {
             name: user,
             intro: 'Welcome to Bloggy! We\'re very excited to have you on board.',
-            // action: {
-            //     instructions: 'To get started with Mailgen, please click here:',
-            //     button: {
-            //         color: '#22BC66', // Optional action button color
-            //         text: 'Confirm your account',
-            //         link: 'https://mailgen.js/confirm?s=d9729feb74992cc3482b350163a1a010'
-            //     }
-            // },
             outro: 'Need help, or have questions? Just send an email to info@bloggy.com, we\'d love to help.'
         }
     };
@@ -169,36 +162,46 @@ router.post('/createUser', cloudUpload.single('avatar'), validateUserBody, async
 
     /* TODO: check existence of user */
 
-
-    const newUser = new UserModel(
-        {
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            email: req.body.email,
-            pswHash: hashedPassword,
-            avatar : req.file.path,
-            dateOfBirth: req.body.dateOfBirth
-        }
-    )
-
-
     try {
-        const userToSave = await newUser.save();
-        res
-            .status(201)
-            .send(
+        const user = await UserModel.findOne({email: userEmail})
+        if(user) {
+            res
+                .status(409)
+                .send(
+                    {
+                        statusCode: 409,
+                        message: 'Conflict. User already exists.'
+                    }
+                )
+        } else {
+            const newUser = new UserModel(
                 {
-                    statusCode: 201,
-                    payload: userToSave
+                    firstName: req.body.firstName,
+                    lastName: req.body.lastName,
+                    email: userEmail,
+                    pswHash: hashedPassword,
+                    avatar : req.file.path,
+                    dateOfBirth: req.body.dateOfBirth
                 }
             )
-        transporter.sendMail(mailOptions, function(error, info){
-            if (error) {
-                throw new Error(error);
-            } else {
-                console.log('Email sent: ' + info.response);
-            }
-        });
+        
+            const userToSave = await newUser.save();
+            res
+                .status(201)
+                .send(
+                    {
+                        statusCode: 201,
+                        payload: userToSave
+                    }
+                )
+            transporter.sendMail(mailOptions, function(error, info){
+                if (error) {
+                    throw new Error(error);
+                } else {
+                    console.log('Email sent: ' + info.response);
+                }
+            });
+        }
     } catch(e) {
         console.log(e)
         res

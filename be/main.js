@@ -14,7 +14,7 @@ const app = express();
 const usersRoute = require('./routes/users');
 const blogPostRoute = require('./routes/blogpost');
 const loginRoute = require('./routes/login');
-const githubRoute = require('./routes/github')
+const githubRoute = require('./routes/github');
 
 //middleware
 app.use(express.json());
@@ -27,7 +27,6 @@ app.use('/', usersRoute);
 app.use('/', blogPostRoute);
 app.use('/', loginRoute);
 app.use('/', githubRoute);
-
 
 /* app.get("/", (req, res) => {
     res
