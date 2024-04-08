@@ -60,7 +60,6 @@ function AddBlogPostComment({blogPostId, commentUpdated}) {
      * This function performs a fetch operation against
      * the configured API to post the new comment in the remote database.
      * The function gets the inputs from the formData state.
-     * @param None
      * @returns None
      * On a successfull fetch, commentUpdated prop is called to notify
      * the upper layers that a comment has been posted.

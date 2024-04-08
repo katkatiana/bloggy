@@ -1,3 +1,11 @@
+/**
+ * @fileoverview main.js
+ * This document contains all routes and the direct connection to mongoose database.
+ * @author Mariakatia Santangelo
+ * @date   08-04-2024
+ */
+/******** Import Section  *******************************************************/
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -6,17 +14,20 @@ const logger = require('./middlewares/logger');
 require('dotenv').config();
 const cloudinary = require('cloudinary').v2;
 
+/******** Internal Variables  ***************************************************/
+
 const PORT = 3030;
 
 const app = express();
 
-//import routes
+/******** Import ROUTES Section  *******************************************************/
 const usersRoute = require('./routes/users');
 const blogPostRoute = require('./routes/blogpost');
 const loginRoute = require('./routes/login');
 const githubRoute = require('./routes/github');
 
-//middleware
+/******** Middleware Section  *******************************************************/
+
 app.use(express.json());
 //we need to define cors before all routes in order to have them working
 app.use(cors());
@@ -28,28 +39,7 @@ app.use('/', blogPostRoute);
 app.use('/', loginRoute);
 app.use('/', githubRoute);
 
-/* app.get("/", (req, res) => {
-    res
-    .status(200)
-    .send({
-        title: 'Katia',
-        isServerActive: true
-    })
-})
-
-app.post("/createUser", (req, res) => {
-
-})
-
-app.patch("/updateUser", (req, res) => {
-
-})
-
-app.delete("/deleteUser", (req, res) => {
-    
-}) */
-
-
+/** Connection to mongoose */
 mongoose.connect(process.env.MONGODB_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,

@@ -31,8 +31,9 @@ function AddBlogPost({ postAdded }) {
     })
     console.log(formData)
   }
-
+  
   const getAuthorName = () => {
+    
     const token = localStorage.getItem('auth');
     let name;
     

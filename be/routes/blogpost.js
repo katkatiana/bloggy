@@ -1,3 +1,11 @@
+/**
+ * @fileoverview blogpost.js
+ * This route contains all routing methods related to blogposts.
+ * @author Mariakatia Santangelo
+ * @date   08-04-2024
+ */
+
+/******** Import Section  *******************************************************/
 const express = require('express');
 const server = express.Router();
 const BlogPostModel = require('../models/blogpost');
@@ -10,6 +18,7 @@ const Mailgen = require('mailgen');
 const crypto = require('crypto');
 const { log } = require('console');
 
+/** Set the transporter (object) able to send an email with nodemailer library */
 let transporter = nodemailer.createTransport({
     service: 'gmail', 
     auth: {
@@ -18,6 +27,7 @@ let transporter = nodemailer.createTransport({
     }
 });
 
+/** Set the responsive HTML emails with Mailgen library */
 let mailGenerator = new Mailgen({
     theme: 'default',
     product: {
@@ -29,6 +39,9 @@ let mailGenerator = new Mailgen({
     }
 });
 
+/** Definition of interanl storage to upload images. It defines the destination and generates a random code to identify the image since
+ * every file needs to have a unique suffix.
+ */
 const internalStorage = multer.diskStorage(
     {
         destination: (req, file, cb) => {
@@ -42,6 +55,7 @@ const internalStorage = multer.diskStorage(
     }
 )
 
+/** Configuration of Cloudinary in order to connect to our personal account and upload documents there. */
 cloudinary.config(
     {
         cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -51,6 +65,7 @@ cloudinary.config(
     }
 )
 
+/** Definition of Cloudinary folder to generate and of formats taken when uploading files. */
 const cloudStorage = new CloudinaryStorage( 
     {
         cloudinary: cloudinary,
@@ -62,9 +77,16 @@ const cloudStorage = new CloudinaryStorage(
     }
 )
 
+/** Definition of middleware multer for handling the upload process both on cloudinary or internal storage */
 const upload = multer( { storage: internalStorage } );
 const cloudUpload = multer({ storage: cloudStorage });
 
+/**
+ * Route to get add blogpost's images to clodinary storage.
+ * @returns status code 200 if POST of the blogpost's image is successful.
+ * @returns status code 500 if any other error occurs.
+ * @note route need clodinary.single middleware in order to send image to the correct path. If not declared, request will not be submitted correctly.
+ */
 server.post('/blogPosts/cloudUploadImg', cloudUpload.single('uploadImg'), async (req, res) => {
     try{
         res
@@ -83,7 +105,12 @@ server.post('/blogPosts/cloudUploadImg', cloudUpload.single('uploadImg'), async 
     }
 })
 
-
+/**
+ * Route to get add blogpost's images to internal storage.
+ * @returns status code 200 if POST of the blogpost's image is successful.
+ * @returns status code 500 if any other error occurs.
+ * @note route need upload.single middleware in order to send image to the correct path. If not declared, request will not be submitted correctly.
+ */
 server.post('/blogPosts/uploadImg', upload.single('uploadImg'), async (req, res) => {
     const url = req.protocol + '://' + req.get('host')
 
@@ -110,6 +137,12 @@ server.post('/blogPosts/uploadImg', upload.single('uploadImg'), async (req, res)
     }
 })
 
+/**
+ * Route to get all blogposts if you are logged id (verifyToken middleware).
+ * @returns status code 200 if fetching of the users from db is successful.
+ * @returns status code 500 if any other error occurs.
+ * @note route is protected through verifyToken middleware and can only be accessed with a valid authentication key.
+ */
 server.get('/blogPosts', verifyToken, async (req, res) => {
     const query = req.query;
     try{
@@ -166,6 +199,13 @@ server.get('/blogPosts', verifyToken, async (req, res) => {
     }
 })
 
+/**
+ * Route to get all blogposts with specific Id..
+ * @returns status code 200 if fetching of the blogposts with requested id from db is successful.
+ * @returns status code 404 if the id is not identified.
+ * @returns status code 500 if any other error occurs.
+ * @note route is protected through verifyToken middleware and can only be accessed with a valid authentication key.
+ */
 server.get('/blogPosts/:id', verifyToken, async (req, res) => {
     const { id } = req.params;
 
@@ -197,7 +237,14 @@ server.get('/blogPosts/:id', verifyToken, async (req, res) => {
     }
 })
 
-server.get('/blogPosts/ByName/:query', async (req, res) => {
+/**
+ * Route to get all blogposts with specific name identified by query.
+ * @returns status code 200 if fetching of the user with requested id is succesful.
+ * @returns status code 404 if the name is not identified.
+ * @returns status code 500 if any other error occurs.
+ * @note route is protected through verifyToken middleware and can only be accessed with a valid authentication key.
+ */
+server.get('/blogPosts/ByName/:query', verifyToken, async (req, res) => {
     const { query } = req.params;
  
     try{
@@ -267,6 +314,13 @@ server.get('/blogPosts/ByName/:query', async (req, res) => {
     }
 }) */
 
+/**
+ * Route to add a new blogpost to db if the user is loggeed in (verifyToken middleware).
+ * It also sends an email (sent through nodemailer and structured with MailGen library) if the blog post is succesfully added.
+ * @returns status code 201 if POST of blogpost is succesful and, only if so, it sends the email.
+ * @returns status code 500 if any other error occurs.
+ * @note route is protected through verifyToken middleware and can only be accessed with a valid authentication key.
+ */
 server.post('/addBlogPost', cloudUpload.single('cover'), async (req, res) => {
     
     const email = {
@@ -339,8 +393,14 @@ server.post('/addBlogPost', cloudUpload.single('cover'), async (req, res) => {
     }
 })
 
- 
-server.patch('/updateBlogPost/:id', async (req, res) => {
+/**
+ * Route to modify an existing blogpost found by id (passed as param).
+ * @returns status code 200 if PATCH of the blogpost is succesful.
+ * @returns status code 404 if the id blogpost is not found in db.
+ * @returns status code 500 if any other error occurs.
+ * @note route is protected through verifyToken middleware and can only be accessed with a valid authentication key.
+ */
+server.patch('/updateBlogPost/:id', verifyToken, async (req, res) => {
     const { id } = req.params;
 
     try{
@@ -376,7 +436,14 @@ server.patch('/updateBlogPost/:id', async (req, res) => {
     }
 })
 
-server.delete('/deleteBlogPost/:id', async (req, res) => {
+/**
+ * Route to delete an existing blogpost found by id (passed as param).
+ * @returns status code 200 if the blogpost is succesfully deleted from db.
+ * @returns status code 404 if the id blogpost is not found in db.
+ * @returns status code 500 if any other error occurs.
+ * @note route is protected through verifyToken middleware and can only be accessed with a valid authentication key.
+ */
+server.delete('/deleteBlogPost/:id', verifyToken, async (req, res) => {
     const { id } = req.params;
 
     try{
@@ -405,6 +472,12 @@ server.delete('/deleteBlogPost/:id', async (req, res) => {
     }
 })
 
+/**
+ * Route to modify a cover of existing blogpost found by id (passed as param).
+ * @returns status code 200 if PATCH of the blogpost cover is succesful.
+ * @returns status code 404 if the id blogpost is not found in db.
+ * @returns status code 500 if any other error occurs.
+ */
 server.patch('/updateBlogPost/:id/cover', cloudUpload.single('cover'), async (req, res) => {
     const { id } = req.params;
 
@@ -441,6 +514,13 @@ server.patch('/updateBlogPost/:id/cover', cloudUpload.single('cover'), async (re
     }
 })
 
+/**
+ * Route to get all blogposts' comment if you are logged id (verifyToken middleware) gotten through blogpost id (passes as param).
+ * @returns status code 200 if fetching of the blogposts' comment from db is successful.
+ * @returns status code 404 if the blogpost with specified id is not found in db.
+ * @returns status code 500 if any other error occurs.
+ * @note route is protected through verifyToken middleware and can only be accessed with a valid authentication key.
+ */
 server.get('/blogPosts/:id/comments', verifyToken, async (req, res) => {
     const { id } = req.params;
 
@@ -453,7 +533,7 @@ server.get('/blogPosts/:id/comments', verifyToken, async (req, res) => {
                 .send(
                     {
                         statusCode: 404,
-                        message: 'This post was not found'
+                        message: 'This post was not found.'
                     }
                 )
         }
@@ -469,6 +549,13 @@ server.get('/blogPosts/:id/comments', verifyToken, async (req, res) => {
     }
 })
 
+/**
+ * Route to add a new comment to an existing blogpost identified by blogpost id if you are logged id (verifyToken middleware).
+ * @returns status code 200 if POST of the blogposts' comment is successful.
+ * @returns status code 404 if the blogpost with specified id is not found in db.
+ * @returns status code 500 if any other error occurs.
+ * @note route is protected through verifyToken middleware and can only be accessed with a valid authentication key.
+ */
 server.post('/blogPosts/:id/addComment', verifyToken, async (req, res) => {
     const { id } = req.params;
 
@@ -481,7 +568,7 @@ server.post('/blogPosts/:id/addComment', verifyToken, async (req, res) => {
                 .send(
                     {
                         statusCode: 404,
-                        message: 'This post was not found'
+                        message: 'This post was not found.'
                     }
                 )
         } else {
@@ -516,7 +603,14 @@ server.post('/blogPosts/:id/addComment', verifyToken, async (req, res) => {
     }
 })
 
-server.delete('/blogPosts/:id/comment/:commentId', async (req, res) => {
+/**
+ * Route to delete an existing comment idientified by its own id and related to an existing blogpost identified by blogpost id, only if logged in ( verifyToken middleware).
+ * @returns status code 200 if delete of the blogposts' comment is successful.
+ * @returns status code 404 if the blogpost with specified id is not found in db.
+ * @returns status code 500 if any other error occurs.
+ * @note route is protected through verifyToken middleware and can only be accessed with a valid authentication key.
+ */
+server.delete('/blogPosts/:id/comment/:commentId', verifyToken, async (req, res) => {
     const id  = req.params.id;
     const commentId = req.params.commentId;
 

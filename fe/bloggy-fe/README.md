@@ -1,3 +1,14 @@
+# Project Title & Demo Link
+
+Bloggy
+
+You can access this site [here](https://serene-meringue-2b4475.netlify.app)
+
+# About the app
+
+This site allows the user to navigate through blogposts fetched from a remote database which has been deployed to https://bloggy-be.onrender.com.
+It is also possible to access a more detailed page of the selected blogpost in order to read comments about it and to add a personal one or delete it too, if needed.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
@@ -6,7 +17,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
-### `npm start`
+### `npm run start`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
