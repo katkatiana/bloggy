@@ -35,7 +35,7 @@ let mailGenerator = new Mailgen({
     product: {
         // Appears in header & footer of e-mails
         name: 'Bloggy',
-        link: 'http://localhost:3000'
+        link: process.env.FRONTEND_URL
     }
 });
 

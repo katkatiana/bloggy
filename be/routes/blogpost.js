@@ -33,7 +33,7 @@ let mailGenerator = new Mailgen({
     product: {
         // Appears in header & footer of e-mails
         name: 'Bloggy',
-        link: 'http://localhost:3000'
+        link: process.env.FRONTEND_URL
         // Optional product logo
         // logo: 'https://mailgen.js/img/logo.png'
     }
@@ -332,7 +332,7 @@ server.post('/addBlogPost', cloudUpload.single('cover'), async (req, res) => {
                 button: {
                     color: '#22BC66', // Optional action button color
                     text: 'View post',
-                    link: 'http://localhost:3000/home'
+                    link: process.env.FRONTEND_URL + '/home'
                 }
             },
             outro: 'Need help, or have questions? Just send an email to info@bloggy.com, we\'d love to help.'
