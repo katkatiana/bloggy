@@ -1,6 +1,6 @@
 /**
  * @fileoverview blogpost.js
- * This route contains all routing methods related to blogposts.
+ * This route contains all the routes that handle operations related to blogposts.
  * @author Mariakatia Santangelo
  * @date   08-04-2024
  */
@@ -17,8 +17,11 @@ const nodemailer = require('nodemailer');
 const Mailgen = require('mailgen');
 const crypto = require('crypto');
 const { log } = require('console');
+const blogpost = require('../models/blogpost');
 
-/** Set the transporter (object) able to send an email with nodemailer library */
+/******** Variables Section  ****************************************************/
+
+/** Transporter object needed to send an email with nodemailer library */
 let transporter = nodemailer.createTransport({
     service: 'gmail', 
     auth: {
@@ -27,7 +30,7 @@ let transporter = nodemailer.createTransport({
     }
 });
 
-/** Set the responsive HTML emails with Mailgen library */
+/** Mailgen instance, needed to create responsive and modern-looking HTML emails through Mailgen library */
 let mailGenerator = new Mailgen({
     theme: 'default',
     product: {
@@ -39,7 +42,9 @@ let mailGenerator = new Mailgen({
     }
 });
 
-/** Definition of interanl storage to upload images. It defines the destination and generates a random code to identify the image since
+/** 
+ * Definition of multer internal storage to upload images to the local disk.
+ * It defines the destination and generates a random code to identify the image since
  * every file needs to have a unique suffix.
  */
 const internalStorage = multer.diskStorage(
@@ -55,17 +60,10 @@ const internalStorage = multer.diskStorage(
     }
 )
 
-/** Configuration of Cloudinary in order to connect to our personal account and upload documents there. */
-cloudinary.config(
-    {
-        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-        api_key: process.env.CLOUDINARY_API_KEY,
-        api_secret: process.env.CLOUDINARY_API_SECRET
-
-    }
-)
-
-/** Definition of Cloudinary folder to generate and of formats taken when uploading files. */
+/** 
+ * Definition of multer cloud storage to upload images to cloudinary cloud service.
+ * Allowed image formats are also specified.
+ */
 const cloudStorage = new CloudinaryStorage( 
     {
         cloudinary: cloudinary,
@@ -81,17 +79,34 @@ const cloudStorage = new CloudinaryStorage(
 const upload = multer( { storage: internalStorage } );
 const cloudUpload = multer({ storage: cloudStorage });
 
+/******** Initialization Section  ****************************************************/
+
+/** Configuration of Cloudinary in order to connect to our personal account and upload documents there. */
+cloudinary.config(
+    {
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET
+
+    }
+)
+
+/******** Function Section  ****************************************************/
+
 /**
- * Route to get add blogpost's images to clodinary storage.
- * @returns status code 200 if POST of the blogpost's image is successful.
+ * Route to add a blogpost's image to cloudinary cloud storage.
+ * Method: POST
+ * @returns status code 200 if uploading of the blogpost's image is successful.
  * @returns status code 500 if any other error occurs.
- * @note route need clodinary.single middleware in order to send image to the correct path. If not declared, request will not be submitted correctly.
+ * @note route needs cloudinary.single middleware in order to send the received image to the cloudinary cloud service and
+ * receive back the url to which the image has been published.
+ * If not declared, request will not be submitted correctly.
  */
 server.post('/blogPosts/cloudUploadImg', cloudUpload.single('uploadImg'), async (req, res) => {
     try{
         res
             .status(200)
-            .json({ source: req.file.path })
+            .json({ source: req.file.path }) /* req.file.path will directly contain the URL of the uploaded image */
     } catch(e) {
         console.log(e)
         res
@@ -106,10 +121,12 @@ server.post('/blogPosts/cloudUploadImg', cloudUpload.single('uploadImg'), async 
 })
 
 /**
- * Route to get add blogpost's images to internal storage.
- * @returns status code 200 if POST of the blogpost's image is successful.
+ * Route to add a blogpost's image to internal (local disk) storage.
+ * Method: POST
+ * @returns status code 200 if saving of the blogpost's image is successful.
  * @returns status code 500 if any other error occurs.
- * @note route need upload.single middleware in order to send image to the correct path. If not declared, request will not be submitted correctly.
+ * @note route needs cloudinary.single middleware in order to save the received image on the local disk.
+ * If not declared, request will not be submitted correctly.
  */
 server.post('/blogPosts/uploadImg', upload.single('uploadImg'), async (req, res) => {
     const url = req.protocol + '://' + req.get('host')
@@ -138,8 +155,9 @@ server.post('/blogPosts/uploadImg', upload.single('uploadImg'), async (req, res)
 })
 
 /**
- * Route to get all blogposts if you are logged id (verifyToken middleware).
- * @returns status code 200 if fetching of the users from db is successful.
+ * Route to get all blogposts present in the db.
+ * Method: GET
+ * @returns status code 200 if fetching of the blogposts from db is successful.
  * @returns status code 500 if any other error occurs.
  * @note route is protected through verifyToken middleware and can only be accessed with a valid authentication key.
  */
@@ -200,7 +218,8 @@ server.get('/blogPosts', verifyToken, async (req, res) => {
 })
 
 /**
- * Route to get all blogposts with specific Id..
+ * Route to get all blogposts with specific Id, passed through URL params.
+ * Method: GET
  * @returns status code 200 if fetching of the blogposts with requested id from db is successful.
  * @returns status code 404 if the id is not identified.
  * @returns status code 500 if any other error occurs.
@@ -238,8 +257,9 @@ server.get('/blogPosts/:id', verifyToken, async (req, res) => {
 })
 
 /**
- * Route to get all blogposts with specific name identified by query.
- * @returns status code 200 if fetching of the user with requested id is succesful.
+ * Route to get all blogposts with given author name identified by URL input parameter.
+ * Method: GET
+ * @returns status code 200 if fetching of the user with requested id is successful.
  * @returns status code 404 if the name is not identified.
  * @returns status code 500 if any other error occurs.
  * @note route is protected through verifyToken middleware and can only be accessed with a valid authentication key.
@@ -315,13 +335,15 @@ server.get('/blogPosts/ByName/:query', verifyToken, async (req, res) => {
 }) */
 
 /**
- * Route to add a new blogpost to db if the user is loggeed in (verifyToken middleware).
- * It also sends an email (sent through nodemailer and structured with MailGen library) if the blog post is succesfully added.
- * @returns status code 201 if POST of blogpost is succesful and, only if so, it sends the email.
+ * Route to add a new blogpost to db, using the body of the POST request.
+ * Method: POST
+ * It also sends an email to the post's author if the blog post is successfully added,
+ * by using nodemailer and Mailgen packages.
+ * @returns status code 201 if blogpost is successfully added and, only if so, it sends the email.
  * @returns status code 500 if any other error occurs.
  * @note route is protected through verifyToken middleware and can only be accessed with a valid authentication key.
  */
-server.post('/addBlogPost', cloudUpload.single('cover'), async (req, res) => {
+server.post('/addBlogPost', cloudUpload.single('cover'), verifyToken, async (req, res) => {
     
     const email = {
         body: {
@@ -363,6 +385,7 @@ server.post('/addBlogPost', cloudUpload.single('cover'), async (req, res) => {
     )
 
     try{
+        /** Save blogpost */
         const blogPostToSave = await newBlogPost.save();
 
         res
@@ -373,6 +396,7 @@ server.post('/addBlogPost', cloudUpload.single('cover'), async (req, res) => {
                     payload: blogPostToSave
                 }
             )
+            /** Send the email to blogpost author */
             transporter.sendMail(mailOptions, function(error, info){
                 if (error) {
                     throw new Error(error);
@@ -395,7 +419,9 @@ server.post('/addBlogPost', cloudUpload.single('cover'), async (req, res) => {
 
 /**
  * Route to modify an existing blogpost found by id (passed as param).
- * @returns status code 200 if PATCH of the blogpost is succesful.
+ * The new blogpost is passed in the body.
+ * Method: PATCH
+ * @returns status code 200 if PATCH of the blogpost is successful.
  * @returns status code 404 if the id blogpost is not found in db.
  * @returns status code 500 if any other error occurs.
  * @note route is protected through verifyToken middleware and can only be accessed with a valid authentication key.
@@ -438,8 +464,9 @@ server.patch('/updateBlogPost/:id', verifyToken, async (req, res) => {
 
 /**
  * Route to delete an existing blogpost found by id (passed as param).
- * @returns status code 200 if the blogpost is succesfully deleted from db.
- * @returns status code 404 if the id blogpost is not found in db.
+ * Method: DELETE
+ * @returns status code 200 if the blogpost is successfully deleted from db.
+ * @returns status code 404 if the blogpost with the given id is not found in db.
  * @returns status code 500 if any other error occurs.
  * @note route is protected through verifyToken middleware and can only be accessed with a valid authentication key.
  */
@@ -473,7 +500,10 @@ server.delete('/deleteBlogPost/:id', verifyToken, async (req, res) => {
 })
 
 /**
- * Route to modify a cover of existing blogpost found by id (passed as param).
+ * Route to modify the cover of an existing blogpost found by id (passed as param).
+ * The new image is passed in the body and is automatically uploaded to cloudinary, which
+ * generates the URL that is stored in the db.
+ * Method: PATCH
  * @returns status code 200 if PATCH of the blogpost cover is succesful.
  * @returns status code 404 if the id blogpost is not found in db.
  * @returns status code 500 if any other error occurs.
@@ -515,8 +545,9 @@ server.patch('/updateBlogPost/:id/cover', cloudUpload.single('cover'), async (re
 })
 
 /**
- * Route to get all blogposts' comment if you are logged id (verifyToken middleware) gotten through blogpost id (passes as param).
- * @returns status code 200 if fetching of the blogposts' comment from db is successful.
+ * Route to get all blogposts' comments given the blogpost id (passed as param).
+ * Method: GET
+ * @returns status code 200 if fetching of the blogposts' comment from db is successful. The comments are returned back.
  * @returns status code 404 if the blogpost with specified id is not found in db.
  * @returns status code 500 if any other error occurs.
  * @note route is protected through verifyToken middleware and can only be accessed with a valid authentication key.
@@ -526,6 +557,7 @@ server.get('/blogPosts/:id/comments', verifyToken, async (req, res) => {
 
     try{
         const blogPost = await BlogPostModel.findById(id);
+        const blogPostComments = blogpost.comments;
 
         if(!blogPost) {
             res
@@ -536,6 +568,10 @@ server.get('/blogPosts/:id/comments', verifyToken, async (req, res) => {
                         message: 'This post was not found.'
                     }
                 )
+        } else {
+            res
+            .status(200)
+            .send(blogPostComments)
         }
 
     } catch(e) {
@@ -550,8 +586,10 @@ server.get('/blogPosts/:id/comments', verifyToken, async (req, res) => {
 })
 
 /**
- * Route to add a new comment to an existing blogpost identified by blogpost id if you are logged id (verifyToken middleware).
- * @returns status code 200 if POST of the blogposts' comment is successful.
+ * Route to add a new comment to an existing blogpost identified by blogpost id.
+ * Comment is passed in the request body.
+ * Method: POST
+ * @returns status code 200 if adding of the blogposts' comment is successful.
  * @returns status code 404 if the blogpost with specified id is not found in db.
  * @returns status code 500 if any other error occurs.
  * @note route is protected through verifyToken middleware and can only be accessed with a valid authentication key.
@@ -604,7 +642,8 @@ server.post('/blogPosts/:id/addComment', verifyToken, async (req, res) => {
 })
 
 /**
- * Route to delete an existing comment idientified by its own id and related to an existing blogpost identified by blogpost id, only if logged in ( verifyToken middleware).
+ * Route to delete an existing comment identified by its id and related to an existing blogpost identified by blogpost id.
+ * Method: DELETE
  * @returns status code 200 if delete of the blogposts' comment is successful.
  * @returns status code 404 if the blogpost with specified id is not found in db.
  * @returns status code 500 if any other error occurs.

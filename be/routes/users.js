@@ -20,7 +20,9 @@ const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const nodemailer = require('nodemailer');
 const Mailgen = require('mailgen');
 
-/** Set the transporter (object) able to send an email with nodemailer library */
+/******** Variables Section  ****************************************************/
+
+/** Transporter object needed to send an email with nodemailer library */
 let transporter = nodemailer.createTransport({
     service: 'gmail', 
     auth: {
@@ -29,7 +31,7 @@ let transporter = nodemailer.createTransport({
     }
 });
 
-/** Set the responsive HTML emails with Mailgen library */
+/** Mailgen instance, needed to create responsive and modern-looking HTML emails through Mailgen library */
 let mailGenerator = new Mailgen({
     theme: 'default',
     product: {
@@ -49,7 +51,10 @@ cloudinary.config(
     }
 )
 
-/** Definition of Cloudinary folder to generate and of formats taken when uploading files.  */
+/** 
+ * Definition of multer cloud storage to upload images to cloudinary cloud service.
+ * Allowed image formats are also specified.
+ */
 const cloudStorage = new CloudinaryStorage( 
     {
         cloudinary: cloudinary,
@@ -64,8 +69,11 @@ const cloudStorage = new CloudinaryStorage(
 /** Definition of middleware multer for handling the upload process */
 const cloudUpload = multer({ storage: cloudStorage });
 
+/******** Function Section  ****************************************************/
+
 /**
- * Route to get all users if you are logged id (verifyToken middleware).
+ * Route to get all users.
+ * Method: GET
  * @returns status code 200 if fetching of the users from db is successful.
  * @returns status code 500 if any other error occurs.
  * @note route is protected through verifyToken middleware and can only be accessed with a valid authentication key.
@@ -89,8 +97,9 @@ router.get('/getUsers', verifyToken, async (req, res) => {
 })
 
 /**
- * Route to get all users with specific Id.
- * @returns status code 200 if fetching of the user with requested id is succesful.
+ * Route to get all users with specific Id, given as URL param.
+ * Method: GET
+ * @returns status code 200 if fetching of the user with requested id is successful.
  * @returns status code 404 if the id is not identified.
  * @returns status code 500 if any other error occurs.
  */
@@ -128,7 +137,8 @@ router.get('/getUsers/:id', async (req, res) => {
 })
 
 /**
- * Route to get all users with specific name identified by query.
+ * Route to get all users with specific name identified by query URL param.
+ * Method: GET
  * @returns status code 200 if fetching of the user with requested id is found in db.
  * @returns status code 404 if the id is not identified.
  * @returns status code 500 if any other error occurs.
@@ -169,16 +179,20 @@ router.get("/getUsers/ByName/:query", async (req, res) => {
 })
 
 /**
- * Route to create a new user if the body of the request is valid (validateUserBody middleware).
- * It also sends an email (sent through nodemailer and structured with MailGen library) if the signup is succesful.
- * @returns status code 201 if POST of the user is succesful and, only if so, it sends the email.
+ * Route to create a new user (signup).
+ * The user to be created is contained in the request body.
+ * Method: POST
+ * It also sends an email (sent through nodemailer and structured with MailGen library) if the signup is successful.
+ * @returns status code 201 if creation of the user is successful and, only if so, it stores the user in the db and sends the email.
  * @returns status code 409 if the user already exists.
  * @returns status code 500 if any other error occurs.
- * @note route has a specific middleware ablo to check if any data of the user body is uncorrect or empty. If so, no user will be added in db.
+ * @note route has a specific middleware able to check if any data of the user body is incorrect or empty. If so, no user will be added in db.
+ * @note the route uses the cloudinary middleware to upload the user image to the cloud and receive back the URL of the 
+ * uploaded image to be stored in the db.
  */
 router.post('/createUser', cloudUpload.single('avatar'), validateUserBody, async (req, res) => {
     
-    /******** Internal Variables  ***************************************************/
+    /* db stores only the hash of the received password, and not the password itself */
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
     const user = req.body.firstName + " " + req.body.lastName;
@@ -198,8 +212,6 @@ router.post('/createUser', cloudUpload.single('avatar'), validateUserBody, async
         html: mailGenerator.generate(email),
         text: mailGenerator.generatePlaintext(email)
     };
-
-    /* TODO: check existence of user */
 
     try {
         const user = await UserModel.findOne({email: userEmail})
@@ -257,7 +269,9 @@ router.post('/createUser', cloudUpload.single('avatar'), validateUserBody, async
 
 /**
  * Route to modify an existing user found by id (passed as param).
- * @returns status code 200 if PATCH of the user is succesful.
+ * The information to update are passed in the request body.
+ * Method: PATCH
+ * @returns status code 200 if PATCH of the user is successful.
  * @returns status code 404 if the id user is not found in db.
  * @returns status code 500 if any other error occurs.
  */
@@ -298,7 +312,8 @@ router.patch("/updateUser/:id", async (req, res) => {
 
 /**
  * Route to delete an existing user found by id (passed as param).
- * @returns status code 200 if the user is succesfully deleted from db.
+ * Method: DELETE
+ * @returns status code 200 if the user is successfully deleted from db.
  * @returns status code 404 if the id user is not found in db.
  * @returns status code 500 if any other error occurs.
  */
@@ -333,9 +348,12 @@ router.delete('/deleteUser/:id', async (req, res) => {
 
 /**
  * Route to modify an avatar of existing user found by id (passed as param).
+ * Method: PATCH
  * @returns status code 200 if PATCH of the user avatar is succesful.
  * @returns status code 404 if the id user is not found in db.
  * @returns status code 500 if any other error occurs.
+ * @note the route uses the cloudinary middleware to upload the image to the cloud and receive back the URL of the 
+ * uploaded image.
  */
 router.patch("/updateUser/:id/avatar", cloudUpload.single('avatar'), async (req, res) => {
     const {id} = req.params;

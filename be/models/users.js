@@ -1,3 +1,10 @@
+/**
+ * @fileoverview users.js
+ * Defines the mongoose schema for a user to be stored in the database.
+ * @author Mariakatia Santangelo
+ * @date   08-04-2024
+ */
+
 const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema(

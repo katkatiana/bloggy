@@ -1,12 +1,24 @@
+/**
+ * @fileoverview verifyToken.js
+ * This middleware is responsible of verifying the access token contained in the incoming HTTP request header.
+ * @author Mariakatia Santangelo
+ * @date   08-04-2024
+ */
+
 /********************************** Import section ***************************************************/
 const jwt = require('jsonwebtoken');
 
+/********************************** Function section *************************************************/
+
 /**
- * This middleware chack if the authentication key is present, so the user is authorised to make any kind of protected request. 
- * @param {*} req takes token key if present.
- * @param {*} next allows to process any server request if no error occurred.
- * @returns status 401 if no token key is found.
- * @returns status 403 if no token is not valid or expired.
+ * verifyToken
+ * This middleware checks if the authentication token is present, and if so,
+ * verifies it using jwt library.
+ * @param {*} req the incoming HTTP request, whose header contains the authentication token.
+ * @param {*} res the outgoing response.
+ * @param {*} next allows to advance to the next middleware, if any.
+ * @returns status 401 if no token is found.
+ * @returns status 403 if token is not valid or expired.
  */
 const verifyToken = (req, res, next) => {
 
@@ -24,6 +36,8 @@ const verifyToken = (req, res, next) => {
     }
 
     try{
+        
+        /* In case token is not valid, an exception is raised */
         const verified = jwt.verify(token, process.env.SECRET_KEY);
         req.user = verified;
 

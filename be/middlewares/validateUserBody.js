@@ -1,8 +1,21 @@
 /**
- * This middleware controls every param  of the user body object and allows to specify what kind of characteristics they need to have in order to process any request.
- * @param {*} req takes the user body to be validated.
- * @param {*} res sends error 400 in case any error occured.
- * @param {*} next allows to process the server request only if no error occured before.
+ * @fileoverview validateUserBody.js
+ * This middleware is responsible of validating the body of HTTP request containing user data.
+ * @author Mariakatia Santangelo
+ * @date   08-04-2024
+ */
+
+
+/********************************** Function section *************************************************/
+
+/**
+ * validateUserBody
+ * This middleware controls every param of the user body object contained in the request, 
+ * and allows to specify what kind of characteristics they need to have in order to advance the request to 
+ * the next middleware.
+ * @param {*} req the incoming request. Contains the user body to be validated.
+ * @param {*} res the outgoing response. Is sent with error 400 in case any error occured.
+ * @param {*} next allows to advance to the next middleware, but only if no error occured before.
  */
 const validateUserBody = (req, res, next) => {
     const errors = [];

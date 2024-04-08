@@ -1,3 +1,10 @@
+/**
+ * @fileoverview blogpost.js
+ * Defines the mongoose schema for a blog post to be stored in the database.
+ * @author Mariakatia Santangelo
+ * @date   08-04-2024
+ */
+
 const mongoose = require('mongoose');
 
 const BlogPostSchema = new mongoose.Schema(

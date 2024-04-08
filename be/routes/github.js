@@ -22,7 +22,9 @@ const nodemailer = require('nodemailer');
 const Mailgen = require('mailgen');
 require('dotenv');
 
-/** Set the transporter (object) able to send an email with nodemailer library */
+/******** Variables Section  ****************************************************/
+
+/** Transporter object needed to send an email with nodemailer library */
 let transporter = nodemailer.createTransport({
     service: 'gmail', 
     auth: {
@@ -31,7 +33,7 @@ let transporter = nodemailer.createTransport({
     }
 });
 
-/** Set the responsive HTML emails with Mailgen library */
+/** Mailgen instance, needed to create responsive and modern-looking HTML emails through Mailgen library */
 let mailGenerator = new Mailgen({
     theme: 'default',
     product: {
@@ -43,7 +45,17 @@ let mailGenerator = new Mailgen({
     }
 });
 
+/** 
+ * Stores the user email retrieved from the github API.
+ * This is needed since passport-github is buggy because when the oauth process is
+ * successful, the github user email is returned as null even if the email is set
+ * to be public.
+ * We retrive the email using the api endpoint so we are sure to get the correct one.
+ * That email is stored in the below variable.
+ */
 let userEmail = ""
+
+/******** Initialization Section  ****************************************************/
 
 /** Configuration of router in order to connect to our personal github app through secret keys. */
 github.use(
@@ -67,10 +79,13 @@ passport.deserializeUser((user, done) => {
     done(null, user)
 });
 
+/******** Function Section  ****************************************************/
+
 /**
  * This function gets the github user email in order to pass it to db model to store it in our db.
- * It is necessary to do so since github can have private emails users.
- * @param {*} accessToken is generated when an user logs in through github. It is necessary to be authorized to request user's email.
+ * It is necessary to do so since github users can have private email.
+ * Furthermore, passport-github is buggy because when the oauth process is successful, the github user email is returned as null even if the email is set to public.
+ * @param {*} accessToken Token generated when an user successfully logs in through github. It is necessary to request user's email.
  * @returns the email of the github user now registered also in our db.
  */
 const getUserEmail = async (accessToken) => {
@@ -99,10 +114,16 @@ const getUserEmail = async (accessToken) => {
 } 
 
 /**
- * Route to add a new user to db who logged in for the first time through github auth.
- * It also sends an email (sent through nodemailer and structured with MailGen library) if the signup is succesful.
- * It checks the previous existence of user in db and only if not found, it saves the user as a new one.
- * If it has to save the new user, it generates a temporary password (tempPassword variable) to be sent to the user email in order to log in not necessarely through github again in the future.
+ * This middleware handles the oauth github login process.
+ * The async code gets executed when the access is performed successfully, then
+ * the accessToken is received along with the profile of the logged user.
+ * In that case, we check for the existence of the user based on the email (retrieved with explicit API call to github endpoint, since the one returned
+ * in the profile object is always null due to passport bug).
+ * If the user does not exist on the db, we register it and we also send a welcome email (as we do for other standard users).
+ * Anyway, for the user to be stored in the db a password is needed: we generate a random temporary password, which is sent
+ * in the welcome email, and the hash of this password will be stored in the db.
+ * Then the user will have the possibility to update this temp password.
+ * WIth this mechanism, the user will be able to log in not necessarily through github again in the future.
  */
 passport.use(
     new strategy(
@@ -168,7 +189,7 @@ passport.use(
 )
 
 /**
- * Route to get the new github authenticated user.
+ * Route invoked by frontend to start github oauth login process.
  */
 github.get("/auth/github", passport.authenticate('github', {scope: ['user:email']}), (req, res) => {
     const user = req.user;
@@ -178,7 +199,9 @@ github.get("/auth/github", passport.authenticate('github', {scope: ['user:email'
 })
 
 /**
- * Route to get the new github authenticated user for generating a new token with the same model as other stored users.
+ * Callback route called by github oauth when the authentication is performed correctly.
+ * In this route we use the information provided by github to build a new token with the same model as other stored users.
+ * The new token is returned as URL query string.
  */
 github.get("/auth/github/callback", passport.authenticate('github', {failureRedirect: '/'}), (req, res) => {
     const user = req.user;    
@@ -197,9 +220,6 @@ github.get("/auth/github/callback", passport.authenticate('github', {failureRedi
     res.redirect(redirectUrl);
 })
 
-/**
- * Route to accept the new user and transfer it to the home with its authentication token previously generated.
- */
 github.get("/success", (req, res) => {
     res.redirect("/home");
 })
