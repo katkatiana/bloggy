@@ -37,7 +37,7 @@ let mailGenerator = new Mailgen({
     product: {
         // Appears in header & footer of e-mails
         name: 'Bloggy',
-        link: 'http://localhost:3000'
+        link: process.env.FRONTEND_URL
         // Optional product logo
         // logo: 'https://mailgen.js/img/logo.png'
     }
@@ -172,7 +172,7 @@ passport.use(
  */
 github.get("/auth/github", passport.authenticate('github', {scope: ['user:email']}), (req, res) => {
     const user = req.user;
-    const redirectUrl = `http://localhost:3000/success?user=${JSON.stringify(user)}`
+    const redirectUrl = process.env.FRONTEND_URL + `/success?user=${JSON.stringify(user)}`
 
     res.redirect(redirectUrl);
 })
@@ -193,7 +193,7 @@ github.get("/auth/github/callback", passport.authenticate('github', {failureRedi
             expiresIn: '24h'
         }
     )
-    const redirectUrl = `http://localhost:3000/success?token=${token}`
+    const redirectUrl = process.env.FRONTEND_URL+ `/success?token=${token}`
     res.redirect(redirectUrl);
 })
 
