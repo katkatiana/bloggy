@@ -1,3 +1,11 @@
+/**
+ * @fileoverview Main.jsx
+ * This component renders the page in which all
+ * blogposts are shown.
+ * @author Mariakatia Santangelo
+ * @date   08-04-2024
+ */
+
 import { useEffect, useState } from 'react';
 import Navbar from '../Navbar/Navbar';
 import Spinner from 'react-bootstrap/Spinner';

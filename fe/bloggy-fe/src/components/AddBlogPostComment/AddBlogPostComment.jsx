@@ -1,3 +1,11 @@
+/**
+ * @fileoverview AddBlogPostComment.jsx
+ * This component renders the page form in which it is 
+ * possible to add new comment(s) to existing blogpost(s).
+ * @author Mariakatia Santangelo
+ * @date   08-04-2024
+ */
+
 import React from 'react'
 import { useState, useContext } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -60,7 +68,6 @@ function AddBlogPostComment({blogPostId, commentUpdated}) {
      * This function performs a fetch operation against
      * the configured API to post the new comment in the remote database.
      * The function gets the inputs from the formData state.
-     * @returns None
      * On a successfull fetch, commentUpdated prop is called to notify
      * the upper layers that a comment has been posted.
      * If any kind of error occurs during the Fetch operation,

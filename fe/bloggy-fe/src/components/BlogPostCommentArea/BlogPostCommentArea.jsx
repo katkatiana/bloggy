@@ -1,3 +1,11 @@
+/**
+ * @fileoverview BlogPostCommentArea.jsx
+ * This component renders the page in which all
+ * comments to selected blogpost are shown.
+ * @author Mariakatia Santangelo
+ * @date   08-04-2024
+ */
+
 import React from 'react'
 import { useEffect, useState } from 'react';
 import { Button, ListGroup } from "react-bootstrap";

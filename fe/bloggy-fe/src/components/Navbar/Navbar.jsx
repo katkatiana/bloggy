@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Navbar.jsx
+ * This component renders the NavBar of the application.
+ * @author Mariakatia Santangelo
+ * @date   08-04-2024
+ */
+
 import React, { useEffect, useState } from "react";
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';

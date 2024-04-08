@@ -1,9 +1,9 @@
 /**
- * @fileoverview BookDetails.jsx
+ * @fileoverview BlogPostDetails.jsx
  * This component renders the page in which the
- * details of the specified book are shown.
+ * details of the specified blogpost are shown.
  * @author Mariakatia Santangelo
- * @date   01-03-2024
+ * @date   08-04-2024
  */
 
 /******** Import Section  *******************************************************/
@@ -23,16 +23,16 @@ import BlogPostCommentArea from '../BlogPostCommentArea/BlogPostCommentArea';
 /******** Component Definition  *************************************************/
 
 /**
- * BookDetails
+ * BlogPostDetails
  * This component renders the layout of the page built to show
- * the details of the specified book object.
- * The layout also includes a separated component, MyCommentArea, which
+ * the details of the specified blogpost object.
+ * The layout also includes a separated component, BlogPostCommentArea, which
  * renders the comments associated to the selected book.
  * @param {*} None 
  * No parameters are given through props, anyway the component reads the asin
  * of the selected book through url params (useParams).
  * @returns Instantiation of the elements that contain the book details,
- * and also the instantiation of MyCommentArea component.
+ * and also the instantiation of BlogPostCommentArea component.
  */
 const BlogPostDetails = () => {
 

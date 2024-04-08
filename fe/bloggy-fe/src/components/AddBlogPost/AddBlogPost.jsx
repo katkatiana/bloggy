@@ -1,3 +1,11 @@
+/**
+ * @fileoverview AddBlogPost.jsx
+ * This component renders the page in which it is 
+ * possible to add new blogpost(s).
+ * @author Mariakatia Santangelo
+ * @date   08-04-2024
+ */
+
 import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';

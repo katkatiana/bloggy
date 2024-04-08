@@ -1,3 +1,11 @@
+/**
+ * @fileoverview SignupForm.jsx
+ * This component renders the page in which it is 
+ * possible to sign up as new user after compiling signup form.
+ * @author Mariakatia Santangelo
+ * @date   08-04-2024
+ */
+
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import Navbar from '../Navbar/Navbar'
