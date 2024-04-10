@@ -6,6 +6,8 @@
  * @date   08-04-2024
  */
 
+/******** Import Section  *******************************************************/
+
 import React from 'react'
 import { useState, useContext } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -14,10 +16,21 @@ import Modal from 'react-bootstrap/Modal';
 import { jwtDecode } from "jwt-decode";
 
 
+/******** Component Definition  *************************************************/
+
+/**
+ * This component renders modal containing text areas that can be used to input
+ * a new comment to an existing blogpost.
+ * @param blogPostId the ID of the blogpost to which we are posting a new comment.
+ * @param commentUpdated callback to be called if comment to blogpost get posted
+ * @returns the instantiation of the modal component, along with the elements needed for
+ * the post process.
+ */
 function AddBlogPostComment({blogPostId, commentUpdated}) {
   
-    const [show, setShow] = useState(false);
+    /******** Internal Variables  ***************************************************/
 
+    const [show, setShow] = useState(false);
     const [isFetchCompleted, setIsFetchCompleted] = useState(false);
     const [error, setError] = useState(false);
     const [formData, setFormData] = useState({});
@@ -28,6 +41,10 @@ function AddBlogPostComment({blogPostId, commentUpdated}) {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+    /**
+     * This function decodes the author name from the jwt token generated with all authors infos.
+     * @returns the author name if any token is found in local storage.
+     */
     const getAuthorName = () => {
         const token = localStorage.getItem('auth');
         let name;
@@ -45,7 +62,10 @@ function AddBlogPostComment({blogPostId, commentUpdated}) {
     
         return name
     }
-
+    /**
+     * This function decodes the author avatar from the jwt token generated with all authors infos.
+     * @returns the author avatar if any token is found in local storage.
+     */
     const getAuthorAvatar = () => {
         const token = localStorage.getItem('auth');
         let avatar;
@@ -65,10 +85,11 @@ function AddBlogPostComment({blogPostId, commentUpdated}) {
 
     /**
      * addData
+     * Method: POST
      * This function performs a fetch operation against
      * the configured API to post the new comment in the remote database.
      * The function gets the inputs from the formData state.
-     * On a successfull fetch, commentUpdated prop is called to notify
+     * On a successful fetch, commentUpdated prop is called to notify
      * the upper layers that a comment has been posted.
      * If any kind of error occurs during the Fetch operation,
      * an Exception is raised and the Error is signalled through
@@ -111,7 +132,6 @@ function AddBlogPostComment({blogPostId, commentUpdated}) {
      * This function just collects all the input parameters and fills the formData
      * accordingly, also checking their value for correctness.
      * @param ev Event object, which can be inspected for target, value, etc.
-     * @returns None
      */
     const handleOnChange = async (ev) => {
         ev.preventDefault();
@@ -132,11 +152,9 @@ function AddBlogPostComment({blogPostId, commentUpdated}) {
     }
 
   /**
-   * handleUpdate
+   * handleSave
    * This function is triggered when the Save button is pressed.
    * It starts the POST request if the required inputs are valid.
-   * @param None
-   * @returns None
    */
     const handleSave = () => {
         if(isCommentValid){

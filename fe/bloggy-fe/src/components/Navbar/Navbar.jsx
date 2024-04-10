@@ -5,6 +5,8 @@
  * @date   08-04-2024
  */
 
+/******** Import Section  *******************************************************/
+
 import React, { useEffect, useState } from "react";
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
@@ -13,14 +15,26 @@ import { jwtDecode } from "jwt-decode";
 import './Navbar.css';
 import { useNavigate } from 'react-router-dom';
 
+/******** Component Definition  *************************************************/
 
+/**
+ * Navbar
+ * This component defines the layout of the navigation bar and allows 
+ * the user to log out.
+ */
 function MyNav() {
+
+  /******** Internal Variables  ***************************************************/
 
   const [currentUser, setCurrentUser] = useState('')
   const [loggedIn, setLoggedIn] = useState(false);
   const token = localStorage.getItem('auth');
   const navigate = useNavigate();
 
+  /**
+   * This function decodes the author name from the jwt token generated with all authors infos.
+   * @returns the author name if any token is found in local storage.
+   */
   const getAuthorName = () => {
     let name;
     
@@ -36,11 +50,20 @@ function MyNav() {
     return name
   }
 
+  /**
+   * This functions is triggered anytime a user presses the Log out button and removes
+   * the authorization token while redirecting to the login page.
+   */
   const handleLogout = () => {
     localStorage.removeItem('auth');
     alert('Logout succesful');
     navigate('/');
   }
+
+  /** When token key is detected, the function to get the author name is triggered 
+   * in order to show it in the navbar section and the loggedIn state is updated. 
+   * If no token is found, the user is logged out.
+   */
 
   useEffect( () => {
     if(token){

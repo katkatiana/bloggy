@@ -6,6 +6,8 @@
  * @date   08-04-2024
  */
 
+/******** Import Section  *******************************************************/
+
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import Navbar from '../Navbar/Navbar'
@@ -13,7 +15,18 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom'
 import './LoginForm.css'
 
+/******** Component Definition  *************************************************/
+
+/**
+ * LoginForm
+ * This component renders the text areas that can be used to input
+ * a new login with already existing users. It also has the new registration
+ * option as a button that will redirect to SignUpForm component.
+ * @returns Instantiation of the elements that contain the login form.
+ */
 const LoginForm = () => {
+
+    /******** Internal Variables  ***************************************************/
 
     const [isError, setIsError] = useState(false);
     const navigate = useNavigate();
@@ -24,6 +37,12 @@ const LoginForm = () => {
             }
         );
 
+    /**
+     * handleOnChange
+     * This function just collects all the input parameters and fills the formData
+     * accordingly, also checking their value for correctness.
+     * @param ev Event object, which can be inspected for target, value, etc.
+     */
     const handleOnChange = (ev) => {
         ev.preventDefault();
         const {name, value} = ev.target;
@@ -33,14 +52,34 @@ const LoginForm = () => {
         })
     }
 
+    /**
+     * handleOnClickGithubLogin
+     * This function redirects to the github login
+     */
     const handleOnClickGithubLogin = () => {
         window.location.href = process.env.REACT_APP_FRONTEND_SERVER_URL+'/auth/github' 
     }
 
+    /**
+     * goToSignUp
+     * This function redirects to the sign up page
+     */
     const goToSignUp = () => {
         navigate('/signup')
     }
     
+    /**
+     * handleOnSubmit
+     * Method: POST
+     * This function performs a fetch operation against
+     * the configured API to log the user after checking its data.
+     * The function gets the inputs from the formData state.
+     * On a successful fetch, a token for the user session is added to local storage
+     * and the user is redirected to the home page.
+     * If any kind of error occurs during the Fetch operation, 
+     * the Error is signalled through the error internal state.
+     * @param {*} ev 
+     */
     const handleOnSubmit = async (ev) => {
         ev.preventDefault()
 
@@ -52,7 +91,7 @@ const LoginForm = () => {
         .then((res) => {
             console.log(res);
             if(res.status === 200) {
-                alert('Login successfull')
+                alert('Login successful')
                 localStorage.setItem('auth', JSON.stringify(res.data.token))
                 navigate('/home')
             }

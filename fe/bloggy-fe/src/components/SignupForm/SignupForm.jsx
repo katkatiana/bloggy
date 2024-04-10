@@ -6,6 +6,8 @@
  * @date   08-04-2024
  */
 
+/******** Import Section  *******************************************************/
+
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import Navbar from '../Navbar/Navbar'
@@ -14,8 +16,16 @@ import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'
 
+/******** Component Definition  *************************************************/
 
+/**
+ * SignupForm.jsx
+ * This component renders the text areas that can be used to start a 
+ * registration as new user.
+ */
 const SignupForm = () => {
+
+    /******** Internal Variables  ***************************************************/
 
     const navigate = useNavigate();
     const [signupForm, setSignupForm] = useState( 
@@ -29,9 +39,13 @@ const SignupForm = () => {
                 dateOfBirth: new Date().toLocaleDateString()
             }
         );
-        console.log(signupForm.dateOfBirth)
     
-    
+    /**
+     * handleOnChange
+     * This function collects all the input parameters and fills the signupForm
+     * accordingly.
+     * @param ev Event object, which can be inspected for target, value, etc.
+     */    
     const handleOnChange = (ev) => {
         ev.preventDefault();
         
@@ -42,6 +56,11 @@ const SignupForm = () => {
         })
     }
 
+    /**
+     * This function checks if the password has been correctly written in both text area
+     * in order to let the user know if the password was not typed properly.
+     * @returns 
+     */
     const checkInput = () => {
         let retFlag = true;
         if(signupForm.password !== signupForm.passwordConf) {
@@ -50,7 +69,18 @@ const SignupForm = () => {
 
         return retFlag
     }
-
+    /**
+     * handleOnSubmit
+     * Method: POST
+     * This function performs a fetch operation against
+     * the configured API to register the user after checking its data.
+     * The function gets the inputs from the signupForm state.
+     * On a successful fetch, data get collected in db
+     * and the user is redirected to the login page.
+     * If any kind of error occurs during the Fetch operation, 
+     * the Error is signalled through the error internal state.
+     * @param ev 
+     */
      const handleOnSubmit = async (ev) => {
         ev.preventDefault()
 

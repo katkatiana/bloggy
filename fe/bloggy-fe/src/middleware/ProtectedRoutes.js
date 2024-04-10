@@ -1,9 +1,18 @@
-import { jwtDecode } from "jwt-decode";
+/**
+ * @fileoverview ProtectedRoutes.js
+ * This component protects the Homepage and SelectedBlogPost pages in order to check 
+ * if the user is authorized by token key to access these routes.
+ * @author Mariakatia Santangelo
+ * @date   08-04-2024
+ */
+
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 import LoginPage from "../pages/LoginPage";
 
-
+/**
+ * This function check if any token is stored in the local storage.
+ * @returns bool
+ */
 const auth = () => {
 
     let token = JSON.parse(localStorage.getItem('auth'));
@@ -32,6 +41,10 @@ const auth = () => {
 //     }, [navigate, token]);
 // }
 
+/**
+ * This function check the eventual authorization to navigate the Homepage. 
+ * If not so, the user will be redirected to LoginPage.
+ */
 const ProtectedRoutes = () => {
 
     const isAuthorized = auth()

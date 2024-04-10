@@ -6,12 +6,29 @@
  * @date   08-04-2024
  */
 
+/******** Import Section  *******************************************************/
+
 import React from 'react'
 import { useEffect, useState } from 'react';
 import { Button, ListGroup } from "react-bootstrap";
 import AddBlogPostComment from '../AddBlogPostComment/AddBlogPostComment';
 
+/******** Component Definition  *************************************************/
 
+/**
+ * BlogPostCommentArea
+ * This component renders the list of comments associated
+ * with a specific blogpost through a dedicated component.
+ * It also instantiates a separate component, AddBlogPost, which
+ * can be used to post new comments.
+ * This component is also in charge of handling the refresh of
+ * the comments whenever a new comment gets deleted/posted.
+ * @param blogPostId the ID of the blogpost whose comments are to be loaded. 
+ * @param commentsArray the array of comments to be loaded and received from BlogPostDetails components. 
+ * @param setUpdatedCommentFlag the callback to be called if comments get updated. 
+ * @returns all loaded comments, and of the AddBlogPost component, that can be used
+ * to add new comments to the blogpost.
+ */
 const BlogPostCommentArea = ({blogPostId, commentsArray, setUpdateCommentFlag}) => {
     
     /** Those states are used to track comment update/delete: 
@@ -29,6 +46,7 @@ const BlogPostCommentArea = ({blogPostId, commentsArray, setUpdateCommentFlag}) 
     
     /**
      * deleteComment
+     * Method: DELETE
      * This function performs a fetch operation against
      * the configured API to delete the specified comment from the remote database.
      */

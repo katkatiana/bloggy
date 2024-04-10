@@ -6,6 +6,9 @@
  * @date   08-04-2024
  */
 
+
+/******** Import Section  *******************************************************/
+
 import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -13,8 +16,19 @@ import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 import { jwtDecode } from "jwt-decode";
 
+/******** Component Definition  *************************************************/
 
+/**
+ * This component renders modal containing text areas that can be used to input
+ * a new blogpost.
+ * @param {*} postAdded the callback to be called if blogpost get posted
+ * @returns the instantiation of the modal component, along with the elements needed for
+ * the post process.
+ */
 function AddBlogPost({ postAdded }) {
+
+/******** Internal Variables  ***************************************************/
+
   const [show, setShow] = useState(false);
   const [error, setError] = useState(false);
   const [isFetchCompleted, setIsFetchCompleted] = useState(false);
@@ -30,6 +44,12 @@ function AddBlogPost({ postAdded }) {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+  /**
+   * handleOnChange
+   * This function just collects all the input parameters and fills the formData
+   * accordingly, also checking their value for correctness.
+   * @param ev Event object, which can be inspected for target, value, etc.
+   */
   const handleOnChange = async (ev) => {
     ev.preventDefault();
     const {name, value} = ev.target;
@@ -40,6 +60,10 @@ function AddBlogPost({ postAdded }) {
     console.log(formData)
   }
   
+  /**
+   * This function decodes the author name from the jwt token generated with all authors infos.
+   * @returns the author name if any token is found in local storage.
+   */
   const getAuthorName = () => {
     
     const token = localStorage.getItem('auth');
@@ -59,6 +83,10 @@ function AddBlogPost({ postAdded }) {
     return name
   }
 
+    /**
+   * This function decodes the author email from the jwt token generated with all authors infos.
+   * @returns the author email if any token is found in local storage.
+   */
   const getAuthorEmail = () => {
     const token = localStorage.getItem('auth');
     let email;
@@ -75,6 +103,13 @@ function AddBlogPost({ postAdded }) {
     return email
   }
 
+  /**
+   * This function calculates the reading time of a blogpost based
+   * on the number of words detected.
+   * @param text. the content of any blogpost passed to the function.
+   * @returns the reading time calculated dividing the number of words detected and the number of 
+   * word read in a minute according to average.
+   */
   const calculateReadingTime = (text) => {
     const wpm = 225;
     const words = text.trim().split(/\s+/).length;
@@ -82,7 +117,17 @@ function AddBlogPost({ postAdded }) {
 
     return time
   }
-
+   /**
+   * This function submits the body of a blogpost and sends it to the server 
+   * in order to add it.
+   * Method: POST
+   * @param ev Event object, which prevents default.
+   * On a successful fetch, pastAdded prop is called to notify
+   * the upper layers that a blogpost has been posted.
+   * If any kind of error occurs during the Fetch operation,
+   * an Exception is raised and the Error is signalled through
+   * the error internal state.
+   */
   const handleOnSubmit = async (ev) => {
     ev.preventDefault()    
 
