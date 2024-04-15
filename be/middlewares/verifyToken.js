@@ -22,7 +22,8 @@ const jwt = require('jsonwebtoken');
  */
 const verifyToken = (req, res, next) => {
 
-    const token = req.headers['authorization'];
+    let token = req.headers['authorization'];
+    console.log(token)
     
     if(!token) {
         return res
@@ -38,11 +39,17 @@ const verifyToken = (req, res, next) => {
     try{
         
         /* In case token is not valid, an exception is raised */
+        if(token.startsWith("\"") && token.endsWith("\""))
+        {
+            token = token.substring(1, token.length -1)
+        }
+        
         const verified = jwt.verify(token, process.env.SECRET_KEY);
         req.user = verified;
 
         next()
     } catch(e) {
+        console.log(e)
         res
           .status(403)
           .send(

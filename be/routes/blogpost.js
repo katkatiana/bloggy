@@ -343,7 +343,7 @@ server.get('/blogPosts/ByName/:query', verifyToken, async (req, res) => {
  * @returns status code 500 if any other error occurs.
  * @note route is protected through verifyToken middleware and can only be accessed with a valid authentication key.
  */
-server.post('/addBlogPost', cloudUpload.single('cover'), verifyToken, async (req, res) => {
+server.post('/addBlogPost', verifyToken, cloudUpload.single('cover'),  async (req, res) => {
     
     const email = {
         body: {
