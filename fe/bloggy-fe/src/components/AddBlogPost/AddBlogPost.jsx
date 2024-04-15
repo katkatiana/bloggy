@@ -156,7 +156,9 @@ function AddBlogPost({ postAdded }) {
             url: process.env.REACT_APP_FRONTEND_SERVER_URL+'/addBlogPost',
             data: body,
             headers: {
+                "Authorization" : localStorage.getItem('auth'),
                 "Content-Type": 'multipart/form-data'
+                
             }
         }
 )
