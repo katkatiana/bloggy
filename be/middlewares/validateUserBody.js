@@ -37,8 +37,8 @@ const validateUserBody = (req, res, next) => {
         errors.push('Last name must be a string')
     }
     
-    if(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/.test(email)){
-        errors.push('Please insert a valid email')
+    if(!(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/).test(email)) {
+        errors.push('Email is not valid.')
     }
     
     if(typeof password !== 'string' || password.length < 8) {
